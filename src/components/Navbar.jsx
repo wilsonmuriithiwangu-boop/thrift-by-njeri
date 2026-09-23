@@ -5,79 +5,95 @@ import { useCart } from "../CartContext";
 import logo from "../assets/logo.jpg";
 
 function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { cartCount } = useCart();
+const [menuOpen, setMenuOpen] = useState(false);
+const { cartCount } = useCart();
 
-  return (
-    <header className="navbar">
-      <div className="navbar-inner">
-        <Link
-          to="/"
-          className="logo-link"
-          onClick={() => setMenuOpen(false)}
-        >
-          <img
-            src={logo}
-            alt="Thrift by Njeri"
-            className="navbar-logo"
-          />
-        </Link>
+const closeMenu = () => {
+setMenuOpen(false);
+};
 
-        <nav className={`nav-links ${menuOpen ? "active" : ""}`}>
-          <Link to="/" onClick={() => setMenuOpen(false)}>
-            Home
-          </Link>
+return (
+<header className="navbar">
+<div className="navbar-inner">
+<Link to="/" className="logo-link" onClick={closeMenu} >
+<img src={logo} alt="Thrift by Njeri" className="navbar-logo" />
+</Link>
 
-          <Link to="/shop" onClick={() => setMenuOpen(false)}>
-            Shop
-          </Link>
+    <nav
+      className={
+        menuOpen
+          ? "nav-links active"
+          : "nav-links"
+      }
+    >
+      <Link to="/" onClick={closeMenu}>
+        Home
+      </Link>
 
-          <Link to="/about" onClick={() => setMenuOpen(false)}>
-            About
-          </Link>
+      <Link to="/shop" onClick={closeMenu}>
+        Shop
+      </Link>
 
-          <Link
-            to="/how-to-order"
-            onClick={() => setMenuOpen(false)}
-          >
-            How to Order
-          </Link>
+      <Link to="/about" onClick={closeMenu}>
+        About
+      </Link>
 
-          <Link to="/admin" onClick={() => setMenuOpen(false)}>
-            Admin
-          </Link>
-        </nav>
+      <Link
+        to="/how-to-order"
+        onClick={closeMenu}
+      >
+        How to Order
+      </Link>
 
-        <div className="navbar-actions">
-          <Link
-            to="/cart"
-            className="bag-button"
-            aria-label={`Shopping cart with ${cartCount} items`}
-          >
-            <ShoppingBag size={20} />
+      <Link to="/admin" onClick={closeMenu}>
+        Admin
+      </Link>
+    </nav>
 
-            {cartCount > 0 && (
-              <span className="cart-count">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+    <div className="navbar-actions">
+      <Link
+        to="/cart"
+        className="bag-button"
+        aria-label={
+          "Shopping cart with " +
+          cartCount +
+          " items"
+        }
+        onClick={closeMenu}
+      >
+        <ShoppingBag size={20} />
 
-          <button
-            className="menu-button"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <X size={24} />
-            ) : (
-              <Menu size={24} />
-            )}
-          </button>
-        </div>
-      </div>
-    </header>
-  );
+        {cartCount > 0 && (
+          <span className="cart-count">
+            {cartCount}
+          </span>
+        )}
+      </Link>
+
+      <button
+        type="button"
+        className="menu-button"
+        onClick={() =>
+          setMenuOpen((current) => !current)
+        }
+        aria-label={
+          menuOpen
+            ? "Close navigation menu"
+            : "Open navigation menu"
+        }
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? (
+          <X size={24} />
+        ) : (
+          <Menu size={24} />
+        )}
+      </button>
+    </div>
+  </div>
+</header>
+
+);
 }
 
 export default Navbar;

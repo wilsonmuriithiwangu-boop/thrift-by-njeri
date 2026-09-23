@@ -51,18 +51,31 @@ button {
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   backdrop-filter: blur(10px);
 }
 
 .navbar-inner {
   max-width: 1250px;
-  margin: auto;
+  margin: 0 auto;
   height: 76px;
   padding: 0 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-logo {
+  width: 90px;
+  height: 55px;
+  object-fit: contain;
+  display: block;
 }
 
 .logo-text {
@@ -75,15 +88,19 @@ button {
   color: var(--pink-dark);
 }
 
+/* Desktop Navigation */
 .nav-links {
   display: flex;
-  gap: 35px;
-  font-size: 14px;
-  font-weight: 500;
+  align-items: center;
+  gap: 30px;
 }
 
 .nav-links a {
-  transition: 0.2s ease;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
@@ -93,7 +110,7 @@ button {
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .bag-button {
@@ -104,12 +121,39 @@ button {
   align-items: center;
   justify-content: center;
   background: var(--pink-light);
+  color: var(--text);
+  text-decoration: none;
+  position: relative;
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--pink-dark);
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menu-button {
   display: none;
-  background: none;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: var(--pink-light);
   border: none;
+  border-radius: 50%;
+  color: var(--text);
+  cursor: pointer;
 }
 
 /* =========================
@@ -721,12 +765,26 @@ button {
 }
 
 /* =========================
-   MOBILE
+   MOBILE NAVIGATION
 ========================= */
 
 @media (max-width: 800px) {
+  .navbar {
+    z-index: 1000;
+  }
+
   .navbar-inner {
     height: 68px;
+    padding: 0 18px;
+  }
+
+  .navbar-logo {
+    width: 70px;
+    height: 50px;
+  }
+
+  .navbar-actions {
+    gap: 8px;
   }
 
   .menu-button {
@@ -739,10 +797,14 @@ button {
     top: 68px;
     left: 0;
     right: 0;
+    width: 100%;
+    box-sizing: border-box;
     background: white;
     flex-direction: column;
+    align-items: stretch;
     gap: 0;
     border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
 
   .nav-links.active {
@@ -750,8 +812,17 @@ button {
   }
 
   .nav-links a {
+    width: 100%;
+    box-sizing: border-box;
     padding: 17px 25px;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-links a:hover {
+    background: var(--pink-light);
+    color: var(--pink-dark);
   }
 
   .hero {
@@ -813,9 +884,18 @@ button {
   }
 }
 
+/* =========================
+   SMALL MOBILE
+========================= */
+
 @media (max-width: 500px) {
   .navbar-inner {
     padding: 0 18px;
+  }
+
+  .navbar-logo {
+    width: 65px;
+    height: 48px;
   }
 
   .logo-text {
@@ -888,17 +968,11 @@ button {
     padding: 30px 22px;
   }
 }
-.logo-link {
-  display: flex;
-  align-items: center;
-}
 
-.navbar-logo {
-  width: 90px;
-  height: 55px;
-  object-fit: contain;
-  display: block;
-}
+/* =========================
+   LOGOS
+========================= */
+
 .hero-logo {
   width: 180px;
   height: 180px;
