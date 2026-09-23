@@ -2668,3 +2668,72 @@ body {
     height: 42px;
   }
 }
+/* =========================================
+   PHONE-SPECIFIC FIXES
+   ========================================= */
+
+@media (max-width: 600px) {
+
+  /* Smaller logo on real phones */
+  .navbar-logo {
+    width: 52px !important;
+    height: 38px !important;
+    object-fit: contain;
+  }
+
+  /* Make normal text darker */
+  body {
+    color: #222 !important;
+  }
+
+  p {
+    color: #444;
+  }
+
+  /* Keep important headings very clear */
+  h1,
+  h2,
+  h3 {
+    color: #222;
+  }
+
+  /* Product information */
+  .product-info h3 {
+    color: #222 !important;
+    font-size: 1rem;
+  }
+
+  .product-price,
+  .product-details-price {
+    color: #222 !important;
+    font-weight: 700;
+  }
+
+  .product-category,
+  .section-label {
+    color: var(--pink-dark) !important;
+  }
+
+  /* Product descriptions */
+  .product-description,
+  .product-details-description {
+    color: #444 !important;
+  }
+
+  /* Shop page text */
+  .shop-header p {
+    color: #444 !important;
+  }
+
+  /* Navigation */
+  .nav-links a {
+    color: #222 !important;
+  }
+
+  /* Make buttons readable */
+  .details-button,
+  .primary-button,
+  .whatsapp-button {
+    font-weight: 600;
+  }
+}
