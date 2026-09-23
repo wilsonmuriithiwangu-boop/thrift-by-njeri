@@ -2755,29 +2755,64 @@ body {
   }
 }
 /* =========================================
-   MOBILE PHONE FIXES
+   FINAL MOBILE HERO + PRODUCT IMAGE FIX
    ========================================= */
 
 @media (max-width: 600px) {
 
-  /* Smaller logo beside FIND YOUR NEXT FAVOURITE LOOK */
+  /* HERO SECTION
+     Keep the logo beside the FIND YOUR NEXT
+     FAVOURITE LOOK statement */
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-content {
+    flex: 1;
+  }
+
+  .hero-image {
+    flex: 0 0 72px;
+    width: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .hero-logo {
-    width: 75px !important;
-    height: 75px !important;
+    width: 62px !important;
+    height: 62px !important;
     object-fit: contain;
   }
 
-  /* Smaller product photo on Product Details */
-  .product-detail-image {
-    height: 330px !important;
+  /* PRODUCT DETAILS IMAGE
+     This is the correct class used by ProductDetails.jsx */
+  .product-details-image {
     width: 100%;
+    height: 300px !important;
     overflow: hidden;
+    border-radius: 14px;
   }
 
-  .product-detail-image img {
+  .product-details-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    display: block;
   }
+}
 
+/* Also control the product image on laptop/desktop */
+.product-details-image {
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.product-details-image img {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
 }
