@@ -2607,3 +2607,64 @@ height: 320px;
     height: 125px;
   }
 }
+/* =========================================
+   READABILITY IMPROVEMENTS
+   ========================================= */
+
+body {
+  color: #222;
+}
+
+/* Make secondary/general text easier to read */
+.hero-description,
+.shop-header > p:last-child,
+.feature p,
+.product-description,
+.product-details-description,
+.admin-description,
+.simple-page > p,
+.order-step p,
+.cta-section p,
+.footer p,
+.loading-message {
+  color: #4a4a4a;
+}
+
+/* Keep important headings dark */
+.hero h1,
+.shop-header h1,
+.section-heading h2,
+.simple-page h1,
+.product-details-info h1,
+.product-info h3 {
+  color: #222;
+}
+
+/* Product prices should stand out clearly */
+.product-price,
+.product-details-price {
+  color: #222;
+  font-weight: 700;
+}
+
+/* Product category labels can remain pink */
+.product-category,
+.section-label {
+  color: var(--pink-dark);
+}
+
+/* Navigation text should be easy to read */
+.nav-links a {
+  color: #222;
+}
+
+/* =========================================
+   MOBILE LOGO SIZE
+   ========================================= */
+
+@media (max-width: 500px) {
+  .navbar-logo {
+    width: 58px;
+    height: 42px;
+  }
+}
