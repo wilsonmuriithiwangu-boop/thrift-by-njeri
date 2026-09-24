@@ -2782,10 +2782,10 @@ body {
   }
 
   .hero-logo {
-    width: 62px !important;
-    height: 62px !important;
-    object-fit: contain;
-  }
+  width: 90px !important;
+  height: 90px !important;
+  object-fit: contain;
+}
 
   /* PRODUCT DETAILS IMAGE
      This is the correct class used by ProductDetails.jsx */
