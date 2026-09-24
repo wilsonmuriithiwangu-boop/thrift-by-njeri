@@ -2816,3 +2816,28 @@ body {
   object-fit: contain;
   display: block;
 }
+/* MOBILE FINAL FIXES */
+
+@media (max-width: 600px) {
+
+  /* Hero logo */
+  .hero-logo {
+    width: 90px !important;
+    height: 90px !important;
+    object-fit: contain;
+  }
+
+  /* Product details image */
+  .product-detail-image {
+    height: 330px !important;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .product-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+}
