@@ -71,11 +71,6 @@ return (
       </div>
 
       <div className="hero-image">
-        <img
-          src={logo}
-          alt="Thrift by Njeri"
-          className="hero-logo"
-        />
 
         <div className="hero-card">
           <Heart size={18} fill="currentColor" />

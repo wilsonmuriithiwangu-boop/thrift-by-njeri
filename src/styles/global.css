@@ -2816,16 +2816,6 @@ body {
   object-fit: contain;
   display: block;
 }
-/* MOBILE FINAL FIXES */
-
-@media (max-width: 600px) {
-
-  /* Hero logo */
-  .hero-logo {
-    width: 90px !important;
-    height: 90px !important;
-    object-fit: contain;
-  }
 
   /* Product details image */
   .product-detail-image {
@@ -2839,5 +2829,20 @@ body {
     height: 100%;
     object-fit: cover;
   }
+  /* Center hero text */
+.hero {
+  text-align: center;
+}
 
+.hero-small {
+  justify-content: center;
+}
+
+.hero-description {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-buttons {
+  justify-content: center;
 }
