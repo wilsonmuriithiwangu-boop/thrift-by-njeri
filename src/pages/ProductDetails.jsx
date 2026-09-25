@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  MessageCircle,
   ShoppingBag,
   Minus,
   Plus,
@@ -22,7 +21,6 @@ function ProductDetails() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageFullScreen, setImageFullScreen] = useState(false);
 
-  // Quantity selected by the CUSTOMER
   const [orderQuantity, setOrderQuantity] = useState(1);
 
   const { addToCart } = useCart();
@@ -125,7 +123,7 @@ function ProductDetails() {
     }, 2000);
   };
 
-  const handleWhatsAppOrder = () => {
+  const handleOrderDress = async () => {
     if (isSoldOut) {
       alert("Sorry, this dress is sold out.");
       return;
@@ -144,6 +142,59 @@ function ProductDetails() {
       "\n\n" +
       "Please confirm availability. ❤️";
 
+    try {
+      if (product.imageUrl && navigator.share) {
+        const response = await fetch(
+          product.imageUrl
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            "Could not load the dress photo."
+          );
+        }
+
+        const blob = await response.blob();
+
+        const file = new File(
+          [blob],
+          `${product.name}.jpg`,
+          {
+            type:
+              blob.type ||
+              "image/jpeg",
+          }
+        );
+
+        if (
+          navigator.canShare &&
+          navigator.canShare({
+            files: [file],
+          })
+        ) {
+          await navigator.share({
+            title:
+              "Thrift by Njeri - " +
+              product.name,
+            text: message,
+            files: [file],
+          });
+
+          return;
+        }
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return;
+      }
+
+      console.log(
+        "Photo sharing unavailable:",
+        error
+      );
+    }
+
+    // Fallback: open WhatsApp directly
     const whatsappLink =
       "https://wa.me/" +
       WHATSAPP_NUMBER +
@@ -155,66 +206,6 @@ function ProductDetails() {
       "_blank",
       "noopener,noreferrer"
     );
-  };
-
-  // Share the actual dress photo
-  const handleSharePhoto = async () => {
-    if (!product.imageUrl) {
-      alert("This dress does not have a photo to share.");
-      return;
-    }
-
-    try {
-      const response = await fetch(product.imageUrl);
-      const blob = await response.blob();
-
-      const file = new File(
-        [blob],
-        `${product.name}.jpg`,
-        {
-          type: blob.type || "image/jpeg",
-        }
-      );
-
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare({ files: [file] })
-      ) {
-        await navigator.share({
-          title: product.name,
-          text:
-            "Thrift by Njeri - " +
-            product.name,
-          files: [file],
-        });
-      } else if (navigator.share) {
-        await navigator.share({
-          title: product.name,
-          text:
-            "Thrift by Njeri - " +
-            product.name,
-          url: product.imageUrl,
-        });
-      } else {
-        window.open(
-          product.imageUrl,
-          "_blank"
-        );
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.error(
-          "Error sharing dress photo:",
-          error
-        );
-
-        window.open(
-          product.imageUrl,
-          "_blank"
-        );
-      }
-    }
   };
 
   return (
@@ -393,28 +384,13 @@ function ProductDetails() {
                       type="button"
                       className="whatsapp-button"
                       onClick={
-                        handleWhatsAppOrder
+                        handleOrderDress
                       }
                     >
-                      <MessageCircle size={18} />
-                      I'm Interested
+                      📷 Order Dress
                     </button>
 
                   </div>
-
-                  {/* PHOTO SHARING */}
-
-                  {product.imageUrl && (
-                    <button
-                      type="button"
-                      className="share-photo-button"
-                      onClick={
-                        handleSharePhoto
-                      }
-                    >
-                      📷 Share Dress Photo
-                    </button>
-                  )}
 
                 </>
               )}
