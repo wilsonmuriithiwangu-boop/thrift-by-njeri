@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles, Heart, MessageCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
-import ProductCard from "../components/ProductCard";
 import logo from "../assets/logo.jpg";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase";
@@ -115,19 +114,21 @@ return (
       </div>
 
       {featuredProducts.length === 0 ? (
-        <p className="loading-message">
-          No dresses available yet.
-        </p>
-      ) : (
-        <div className="products-grid">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
-          ))}
-        </div>
-      )}
+  <p className="loading-message">
+    No dresses available yet.
+  </p>
+) : (
+  <div className="new-arrivals-images">
+    {featuredProducts.map((product) => (
+      <div className="new-arrival-image" key={product.id}>
+        <img
+          src={product.image}
+          alt={product.name || "New dress"}
+        />
+      </div>
+    ))}
+  </div>
+)}
     </section>
 
     <section className="cta-section">
