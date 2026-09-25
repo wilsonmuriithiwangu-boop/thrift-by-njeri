@@ -3362,28 +3362,3 @@ body {
 .order-total-preview strong {
   font-size: 16px;
 }
-.share-photo-button {
-  width: 100%;
-  min-height: 46px;
-  margin-top: 10px;
-  border: 1px solid #e5b6c9;
-  border-radius: 10px;
-  background: #fff;
-  color: #222;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.share-photo-button:hover {
-  background: #fce7ef;
-  border-color: #f7a1c4;
-}
-
-@media (max-width: 600px) {
-  .share-photo-button {
-    min-height: 48px;
-    font-size: 14px;
-  }
-}
