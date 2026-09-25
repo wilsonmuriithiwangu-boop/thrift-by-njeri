@@ -3062,3 +3062,18 @@ body {
     font-size: 9px !important;
   }
 }
+.hero-tagline {
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--pink-dark);
+  text-align: center;
+  margin: 18px 0 10px;
+}
+
+@media (max-width: 600px) {
+  .hero-tagline {
+    font-size: 22px;
+    margin: 16px 0 10px;
+  }
+}
