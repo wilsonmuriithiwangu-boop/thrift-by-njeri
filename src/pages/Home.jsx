@@ -122,9 +122,9 @@ return (
     {featuredProducts.map((product) => (
       <div className="new-arrival-image" key={product.id}>
         <img
-          src={product.image}
-          alt={product.name || "New dress"}
-        />
+  src={product.imageUrl}
+  alt={product.name || "New dress"}
+/>
       </div>
     ))}
   </div>
