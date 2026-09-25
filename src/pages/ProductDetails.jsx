@@ -128,6 +128,50 @@ function ProductDetails() {
   const handleWhatsAppOrder = () => {
     if (isSoldOut) {
       alert("Sorry, this dress is sold out.");
+      const handleSharePhoto = async () => {
+  if (!product.imageUrl) {
+    alert("This dress does not have a photo to share.");
+    return;
+  }
+
+  try {
+    const response = await fetch(product.imageUrl);
+    const blob = await response.blob();
+
+    const file = new File(
+      [blob],
+      `${product.name}.jpg`,
+      {
+        type: blob.type || "image/jpeg",
+      }
+    );
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        title: product.name,
+        text: "Thrift by Njeri - " + product.name,
+        files: [file],
+      });
+    } else if (navigator.share) {
+      await navigator.share({
+        title: product.name,
+        text: "Thrift by Njeri - " + product.name,
+        url: product.imageUrl,
+      });
+    } else {
+      window.open(product.imageUrl, "_blank");
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      console.error("Error sharing dress photo:", error);
+      window.open(product.imageUrl, "_blank");
+    }
+  }
+};
       return;
     }
 
@@ -320,6 +364,13 @@ function ProductDetails() {
                       <MessageCircle size={18} />
                       I'm Interested
                     </button>
+                    <button
+  type="button"
+  className="share-photo-button"
+  onClick={handleSharePhoto}
+>
+  📷 Share Dress Photo
+</button>
 
                   </div>
                 </>
