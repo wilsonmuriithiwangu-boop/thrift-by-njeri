@@ -3116,3 +3116,63 @@ body {
   justify-content: center;
   align-items: center;
 }
+/* =========================================
+   PERFECTLY CENTER HERO ON MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+  .hero {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .hero-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 20px !important;
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .hero-small {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .hero h1 {
+    width: 100% !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .hero-tagline {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .hero-description {
+    width: 100% !important;
+    max-width: 600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+  }
+
+  .hero-buttons {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .hero-image {
+    display: none !important;
+  }
+}
