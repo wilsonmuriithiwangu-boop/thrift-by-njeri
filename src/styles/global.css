@@ -3176,3 +3176,12 @@ body {
     display: none !important;
   }
 }
+/* Slightly larger mobile navbar tabs */
+
+@media (max-width: 800px) {
+  .nav-links a {
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+    padding: 6px 3px !important;
+  }
+}
