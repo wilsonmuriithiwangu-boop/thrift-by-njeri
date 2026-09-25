@@ -142,70 +142,27 @@ function ProductDetails() {
       "\n\n" +
       "Please confirm availability. ❤️";
 
-    try {
-      if (product.imageUrl && navigator.share) {
-        const response = await fetch(
-          product.imageUrl
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            "Could not load the dress photo."
-          );
-        }
-
-        const blob = await response.blob();
-
-        const file = new File(
-          [blob],
-          `${product.name}.jpg`,
-          {
-            type:
-              blob.type ||
-              "image/jpeg",
-          }
-        );
-
-        if (
-          navigator.canShare &&
-          navigator.canShare({
-            files: [file],
-          })
-        ) {
-          await navigator.share({
-            title:
-              "Thrift by Njeri - " +
-              product.name,
-            text: message,
-            files: [file],
-          });
-
-          return;
-        }
-      }
-    } catch (error) {
-      if (error.name === "AbortError") {
-        return;
-      }
-
-      console.log(
-        "Photo sharing unavailable:",
-        error
+    // Open the dress photo in a new tab
+    // so the customer can save/share it.
+    if (product.imageUrl) {
+      window.open(
+        product.imageUrl,
+        "_blank",
+        "noopener,noreferrer"
       );
     }
 
-    // Fallback: open WhatsApp directly
+    // Open Stella's WhatsApp chat directly.
+    // The customer does NOT need to save her number.
     const whatsappLink =
       "https://wa.me/" +
       WHATSAPP_NUMBER +
       "?text=" +
       encodeURIComponent(message);
 
-    window.open(
-      whatsappLink,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    setTimeout(() => {
+      window.location.href = whatsappLink;
+    }, 700);
   };
 
   return (
