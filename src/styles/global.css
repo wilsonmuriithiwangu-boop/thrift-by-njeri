@@ -1183,7 +1183,7 @@ cursor: pointer;
 color: #222;
 }
 
-.cart-item-controls button:hover() {
+.cart-item-controls button:hover {
 background: #fce7ef;
 }
 
@@ -3303,4 +3303,62 @@ body {
     letter-spacing: 2.5px;
     margin-bottom: 14px;
   }
+}
+/* =========================================
+   PRODUCT ORDER QUANTITY
+   ========================================= */
+
+.order-quantity-section {
+  margin: 24px 0;
+}
+
+.order-quantity-section .quantity-label {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.order-quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #e5b6c9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.order-quantity-controls button {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: #fce7ef;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.order-quantity-controls button:hover {
+  background: #f8cddd;
+}
+
+.order-quantity-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.order-quantity-controls span {
+  min-width: 45px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.order-total-preview {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.order-total-preview strong {
+  font-size: 16px;
 }
