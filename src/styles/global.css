@@ -2846,3 +2846,75 @@ body {
 .hero-buttons {
   justify-content: center;
 }
+/* =========================================
+   MOBILE NAVIGATION - PINK TOP BAR
+   ========================================= */
+
+@media (max-width: 800px) {
+
+  .navbar {
+    background: var(--pink-light) !important;
+    border-bottom: 1px solid var(--pink);
+  }
+
+  .navbar-inner {
+    height: 62px;
+    padding: 0 10px;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  /* Hide logo on phones */
+  .logo-link {
+    display: none !important;
+  }
+
+  /* Show navigation directly */
+  .nav-links {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2px;
+    background: transparent;
+    border: none;
+    overflow-x: auto;
+    flex: 1;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-links a {
+    padding: 8px 7px;
+    border: none;
+    color: #222 !important;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .nav-links a:hover {
+    color: var(--pink-dark) !important;
+  }
+
+  /* Shopping bag stays on the right */
+  .navbar-actions {
+    flex-shrink: 0;
+  }
+
+  .bag-button {
+    width: 36px;
+    height: 36px;
+    background: white;
+  }
+
+  /* Remove hamburger completely */
+  .menu-button {
+    display: none !important;
+  }
+}
