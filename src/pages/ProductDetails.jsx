@@ -18,6 +18,7 @@ const { id } = useParams();
 const [product, setProduct] = useState(null);
 const [loading, setLoading] = useState(true);
 const [addedToCart, setAddedToCart] = useState(false);
+const [imageFullScreen, setImageFullScreen] = useState(false);
 
 const { addToCart } = useCart();
 
@@ -124,6 +125,27 @@ setTimeout(() => {
 
 return (
 <>
+{imageFullScreen && (
+  <div
+    className="fullscreen-image-viewer"
+    onClick={() => setImageFullScreen(false)}
+  >
+    <button
+      type="button"
+      className="fullscreen-close"
+      onClick={() => setImageFullScreen(false)}
+      aria-label="Close image"
+    >
+      ×
+    </button>
+
+    <img
+      src={product.imageUrl}
+      alt={product.name}
+      onClick={(event) => event.stopPropagation()}
+    />
+  </div>
+)}
 <Navbar />
 
   <main className="page">
@@ -137,7 +159,10 @@ return (
       </Link>
 
       <div className="product-details-grid">
-        <div className="product-details-image">
+        <div
+          className="product-details-image"
+          onClick={() => setImageFullScreen(true)}
+        >
           {product.imageUrl ? (
             <img
               src={product.imageUrl}
