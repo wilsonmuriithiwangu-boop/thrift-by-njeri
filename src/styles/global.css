@@ -3285,3 +3285,22 @@ body {
     font-size: 28px;
   }
 }
+.collection-label {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #111;
+  border-bottom: 1px solid #f7a1c4;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .collection-label {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    margin-bottom: 14px;
+  }
+}

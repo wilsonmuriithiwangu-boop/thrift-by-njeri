@@ -42,6 +42,9 @@ return (
   <main>
     <section className="hero">
       <div className="hero-content">
+        <div className="collection-label">
+  THRIFT BY NJERI COLLECTION
+</div>
         <p className="hero-small">
           <Sparkles size={16} />
           CURATED THRIFT FASHION
