@@ -22,7 +22,7 @@ function ProductDetails() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageFullScreen, setImageFullScreen] = useState(false);
 
-  // Quantity the CUSTOMER wants to order
+  // Quantity selected by the CUSTOMER
   const [orderQuantity, setOrderQuantity] = useState(1);
 
   const { addToCart } = useCart();
@@ -128,50 +128,6 @@ function ProductDetails() {
   const handleWhatsAppOrder = () => {
     if (isSoldOut) {
       alert("Sorry, this dress is sold out.");
-      const handleSharePhoto = async () => {
-  if (!product.imageUrl) {
-    alert("This dress does not have a photo to share.");
-    return;
-  }
-
-  try {
-    const response = await fetch(product.imageUrl);
-    const blob = await response.blob();
-
-    const file = new File(
-      [blob],
-      `${product.name}.jpg`,
-      {
-        type: blob.type || "image/jpeg",
-      }
-    );
-
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare({ files: [file] })
-    ) {
-      await navigator.share({
-        title: product.name,
-        text: "Thrift by Njeri - " + product.name,
-        files: [file],
-      });
-    } else if (navigator.share) {
-      await navigator.share({
-        title: product.name,
-        text: "Thrift by Njeri - " + product.name,
-        url: product.imageUrl,
-      });
-    } else {
-      window.open(product.imageUrl, "_blank");
-    }
-  } catch (error) {
-    if (error.name !== "AbortError") {
-      console.error("Error sharing dress photo:", error);
-      window.open(product.imageUrl, "_blank");
-    }
-  }
-};
       return;
     }
 
@@ -201,17 +157,81 @@ function ProductDetails() {
     );
   };
 
+  // Share the actual dress photo
+  const handleSharePhoto = async () => {
+    if (!product.imageUrl) {
+      alert("This dress does not have a photo to share.");
+      return;
+    }
+
+    try {
+      const response = await fetch(product.imageUrl);
+      const blob = await response.blob();
+
+      const file = new File(
+        [blob],
+        `${product.name}.jpg`,
+        {
+          type: blob.type || "image/jpeg",
+        }
+      );
+
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        await navigator.share({
+          title: product.name,
+          text:
+            "Thrift by Njeri - " +
+            product.name,
+          files: [file],
+        });
+      } else if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text:
+            "Thrift by Njeri - " +
+            product.name,
+          url: product.imageUrl,
+        });
+      } else {
+        window.open(
+          product.imageUrl,
+          "_blank"
+        );
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error(
+          "Error sharing dress photo:",
+          error
+        );
+
+        window.open(
+          product.imageUrl,
+          "_blank"
+        );
+      }
+    }
+  };
+
   return (
     <>
       {imageFullScreen && (
         <div
           className="fullscreen-image-viewer"
-          onClick={() => setImageFullScreen(false)}
+          onClick={() =>
+            setImageFullScreen(false)
+          }
         >
           <button
             type="button"
             className="fullscreen-close"
-            onClick={() => setImageFullScreen(false)}
+            onClick={() =>
+              setImageFullScreen(false)
+            }
             aria-label="Close image"
           >
             ×
@@ -288,8 +308,11 @@ function ProductDetails() {
               ) : (
                 <p className="stock">
                   {quantity <= 2
-                    ? "Only " + quantity + " left"
-                    : quantity + " available"}
+                    ? "Only " +
+                      quantity +
+                      " left"
+                    : quantity +
+                      " available"}
                 </p>
               )}
 
@@ -307,8 +330,12 @@ function ProductDetails() {
 
                       <button
                         type="button"
-                        onClick={handleDecreaseQuantity}
-                        disabled={orderQuantity <= 1}
+                        onClick={
+                          handleDecreaseQuantity
+                        }
+                        disabled={
+                          orderQuantity <= 1
+                        }
                         aria-label="Decrease quantity"
                       >
                         <Minus size={17} />
@@ -320,9 +347,12 @@ function ProductDetails() {
 
                       <button
                         type="button"
-                        onClick={handleIncreaseQuantity}
+                        onClick={
+                          handleIncreaseQuantity
+                        }
                         disabled={
-                          orderQuantity >= quantity
+                          orderQuantity >=
+                          quantity
                         }
                         aria-label="Increase quantity"
                       >
@@ -334,7 +364,8 @@ function ProductDetails() {
                     <p className="order-total-preview">
                       Total:{" "}
                       <strong>
-                        KSh {orderTotal.toLocaleString()}
+                        KSh{" "}
+                        {orderTotal.toLocaleString()}
                       </strong>
                     </p>
 
@@ -347,7 +378,9 @@ function ProductDetails() {
                     <button
                       type="button"
                       className="primary-button add-to-cart-button"
-                      onClick={handleAddToCart}
+                      onClick={
+                        handleAddToCart
+                      }
                     >
                       <ShoppingBag size={18} />
 
@@ -359,21 +392,30 @@ function ProductDetails() {
                     <button
                       type="button"
                       className="whatsapp-button"
-                      onClick={handleWhatsAppOrder}
+                      onClick={
+                        handleWhatsAppOrder
+                      }
                     >
                       <MessageCircle size={18} />
                       I'm Interested
                     </button>
-                    <button
-  type="button"
-  className="share-photo-button"
-  onClick={handleSharePhoto}
->
-  📷 Share Dress Photo
-</button>
-                    
 
                   </div>
+
+                  {/* PHOTO SHARING */}
+
+                  {product.imageUrl && (
+                    <button
+                      type="button"
+                      className="share-photo-button"
+                      onClick={
+                        handleSharePhoto
+                      }
+                    >
+                      📷 Share Dress Photo
+                    </button>
+                  )}
+
                 </>
               )}
 
