@@ -3077,3 +3077,42 @@ body {
     margin: 16px 0 10px;
   }
 }
+/* =========================================
+   CENTER HERO CONTENT
+   ========================================= */
+
+.hero {
+  text-align: center;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-small {
+  justify-content: center;
+  text-align: center;
+}
+
+.hero h1 {
+  text-align: center;
+}
+
+.hero-description {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-tagline {
+  text-align: center;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
