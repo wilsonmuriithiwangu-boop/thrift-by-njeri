@@ -52,13 +52,14 @@ return (
   Find your next <span>favourite look.</span>
 </h1>
 
-        <p className="hero-description">
-          Discover stylish, affordable thrift pieces carefully selected
-          for you. Look good, feel confident and make every outfit count.
-        </p>
         <h2 className="hero-tagline">
   Style that feels like you
 </h2>
+
+<p className="hero-description">
+  Discover stylish, affordable thrift pieces carefully selected
+  for you. Look good, feel confident and make every outfit count.
+</p>
 
         <div className="hero-buttons">
           <Link to="/shop" className="primary-button">
@@ -72,13 +73,7 @@ return (
         </div>
       </div>
 
-      <div className="hero-image">
-
-        <div className="hero-card">
-          <Heart size={18} fill="currentColor" />
-          <span>Style that feels like you.</span>
-        </div>
-      </div>
+      <div className="hero-image"></div>
     </section>
 
     <section className="features-section">
