@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  MessageCircle,
   ShoppingBag,
   Minus,
   Plus,
@@ -20,7 +21,6 @@ function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageFullScreen, setImageFullScreen] = useState(false);
-
   const [orderQuantity, setOrderQuantity] = useState(1);
 
   const { addToCart } = useCart();
@@ -91,7 +91,6 @@ function ProductDetails() {
 
   const quantity = Number(product.quantity) || 0;
   const price = Number(product.price) || 0;
-
   const isSoldOut = quantity === 0;
 
   const orderTotal = price * orderQuantity;
@@ -123,7 +122,7 @@ function ProductDetails() {
     }, 2000);
   };
 
-  const handleOrderDress = async () => {
+  const handleWhatsAppOrder = () => {
     if (isSoldOut) {
       alert("Sorry, this dress is sold out.");
       return;
@@ -142,27 +141,13 @@ function ProductDetails() {
       "\n\n" +
       "Please confirm availability. ❤️";
 
-    // Open the dress photo in a new tab
-    // so the customer can save/share it.
-    if (product.imageUrl) {
-      window.open(
-        product.imageUrl,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    }
-
-    // Open Stella's WhatsApp chat directly.
-    // The customer does NOT need to save her number.
     const whatsappLink =
       "https://wa.me/" +
       WHATSAPP_NUMBER +
       "?text=" +
       encodeURIComponent(message);
 
-    setTimeout(() => {
-      window.location.href = whatsappLink;
-    }, 700);
+    window.location.href = whatsappLink;
   };
 
   return (
@@ -210,8 +195,6 @@ function ProductDetails() {
 
           <div className="product-details-grid">
 
-            {/* PRODUCT IMAGE */}
-
             <div
               className="product-details-image"
               onClick={() =>
@@ -230,8 +213,6 @@ function ProductDetails() {
                 </div>
               )}
             </div>
-
-            {/* PRODUCT INFORMATION */}
 
             <div className="product-details-info">
 
@@ -256,18 +237,13 @@ function ProductDetails() {
               ) : (
                 <p className="stock">
                   {quantity <= 2
-                    ? "Only " +
-                      quantity +
-                      " left"
-                    : quantity +
-                      " available"}
+                    ? "Only " + quantity + " left"
+                    : quantity + " available"}
                 </p>
               )}
 
               {!isSoldOut && (
                 <>
-                  {/* CUSTOMER QUANTITY */}
-
                   <div className="order-quantity-section">
 
                     <p className="quantity-label">
@@ -299,8 +275,7 @@ function ProductDetails() {
                           handleIncreaseQuantity
                         }
                         disabled={
-                          orderQuantity >=
-                          quantity
+                          orderQuantity >= quantity
                         }
                         aria-label="Increase quantity"
                       >
@@ -319,16 +294,12 @@ function ProductDetails() {
 
                   </div>
 
-                  {/* ACTION BUTTONS */}
-
                   <div className="product-action-buttons">
 
                     <button
                       type="button"
                       className="primary-button add-to-cart-button"
-                      onClick={
-                        handleAddToCart
-                      }
+                      onClick={handleAddToCart}
                     >
                       <ShoppingBag size={18} />
 
@@ -340,15 +311,13 @@ function ProductDetails() {
                     <button
                       type="button"
                       className="whatsapp-button"
-                      onClick={
-                        handleOrderDress
-                      }
+                      onClick={handleWhatsAppOrder}
                     >
-                      📷 Order Dress
+                      <MessageCircle size={18} />
+                      I'm Interested
                     </button>
 
                   </div>
-
                 </>
               )}
 
