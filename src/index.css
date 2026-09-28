@@ -360,3 +360,33 @@ code {
     height: 30px;
   }
 }
+/* Website sharing button */
+
+.share-website-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid #e5b6c9;
+  border-radius: 8px;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-website-button:hover {
+  background: #fce7ef;
+  border-color: #d99ab3;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .share-website-button {
+    width: 100%;
+  }
+}

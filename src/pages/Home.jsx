@@ -6,6 +6,7 @@ import {
   Heart,
   MessageCircle,
   Star,
+  Share2,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import {
@@ -183,6 +184,18 @@ function Home() {
       setSubmittingReview(false);
     }
   };
+  const handleShareWebsite = () => {
+  const message =
+    "Check out Thrift by Njeri 👗❤️\n\n" +
+    "Find stylish and affordable dresses here:\n" +
+    "https://thriftbynjeri.netlify.app/";
+
+  const whatsappLink =
+    "https://wa.me/?text=" +
+    encodeURIComponent(message);
+
+  window.location.href = whatsappLink;
+};
 
   return (
     <>
@@ -218,21 +231,24 @@ function Home() {
             </p>
 
             <div className="hero-buttons">
-              <Link
-                to="/shop"
-                className="primary-button"
-              >
-                Shop Dresses
-                <ArrowRight size={18} />
-              </Link>
+  <Link to="/shop" className="primary-button">
+    Shop Dresses
+    <ArrowRight size={18} />
+  </Link>
 
-              <Link
-                to="/how-to-order"
-                className="secondary-button"
-              >
-                How to Order
-              </Link>
-            </div>
+  <Link to="/how-to-order" className="secondary-button">
+    How to Order
+  </Link>
+
+  <button
+    type="button"
+    className="share-website-button"
+    onClick={handleShareWebsite}
+  >
+    <Share2 size={18} />
+    Share Website
+  </button>
+</div>
 
           </div>
 
