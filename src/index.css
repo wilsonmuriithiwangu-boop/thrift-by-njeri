@@ -687,3 +687,144 @@ body {
     gap: 8px;
   }
 }
+/* =================================
+   PREMIUM CART TAB
+================================= */
+
+.bag-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 9px 15px;
+
+  border: 1px solid #ead1dc;
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #fff7fa 100%
+  );
+
+  color: #222;
+  text-decoration: none;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  box-shadow:
+    0 4px 12px rgba(120, 60, 85, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+}
+
+.bag-button svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+  transition: transform 0.25s ease;
+}
+
+.bag-button:hover {
+  transform: translateY(-2px);
+
+  border-color: #d99ab3;
+
+  background: linear-gradient(
+    135deg,
+    #fff7fa 0%,
+    #fce7ef 100%
+  );
+
+  box-shadow:
+    0 8px 20px rgba(120, 60, 85, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.bag-button:hover svg {
+  transform: translateY(-1px);
+}
+
+.bag-button:active {
+  transform: translateY(0);
+}
+
+/* Cart quantity badge */
+
+.bag-button .cart-count {
+  position: absolute;
+
+  top: -8px;
+  right: -8px;
+
+  min-width: 20px;
+  height: 20px;
+
+  padding: 0 5px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #222;
+  color: #fff;
+
+  border: 2px solid #fff;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+
+  animation: cartBadgePop 0.25s ease;
+}
+
+@keyframes cartBadgePop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .bag-button {
+    min-height: 40px;
+    padding: 8px 11px;
+    gap: 6px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .bag-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .bag-button .cart-count {
+    top: -7px;
+    right: -7px;
+    min-width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+}
