@@ -109,3 +109,254 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+/* ========================================
+   CUSTOMER REVIEWS
+   ======================================== */
+
+.reviews-section {
+  width: 100%;
+  max-width: 1000px;
+  margin: 80px auto;
+  padding: 70px 24px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.reviews-heading {
+  max-width: 650px;
+  margin: 0 auto 35px;
+}
+
+.reviews-heading .section-label {
+  margin-bottom: 10px;
+}
+
+.reviews-heading h2 {
+  margin-bottom: 12px;
+}
+
+.reviews-heading > p:last-child {
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Average rating */
+
+.reviews-rating-summary {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 35px;
+}
+
+.average-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.average-rating strong {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.average-stars {
+  display: flex;
+  gap: 4px;
+  color: #d4af37;
+}
+
+.average-stars svg {
+  color: #d4af37;
+}
+
+.average-rating span {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* Review form */
+
+.review-form {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #f1d6e0;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  text-align: left;
+}
+
+.review-form h3 {
+  text-align: center;
+  margin: 0 0 20px;
+}
+
+/* Rating stars */
+
+.review-stars-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.rating-star-button {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  margin: 0;
+  color: #d4af37;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.rating-star-button svg {
+  color: #d4af37;
+  stroke-width: 1.8;
+}
+
+.rating-star-button:hover {
+  transform: scale(1.15);
+}
+
+/* Form fields */
+
+.review-form input,
+.review-form textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid #e5c4d0;
+  border-radius: 10px;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+  border-color: #d99ab3;
+  box-shadow: 0 0 0 3px rgba(217, 154, 179, 0.12);
+}
+
+.review-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.review-form .primary-button {
+  width: 100%;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+
+.review-form .primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.review-message {
+  text-align: center;
+  margin: 15px 0 0;
+  font-weight: 500;
+}
+
+/* Customer reviews */
+
+.reviews-list {
+  width: 100%;
+  max-width: 900px;
+  margin: 45px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  text-align: left;
+}
+
+.review-card {
+  padding: 22px;
+  background: #fff7fa;
+  border: 1px solid #f3dce5;
+  border-radius: 14px;
+}
+
+.review-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.review-card-top strong {
+  font-size: 16px;
+}
+
+.review-card-stars {
+  display: flex;
+  gap: 2px;
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.review-card-stars svg {
+  color: #d4af37;
+}
+
+.review-card p {
+  margin: 0;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+  .reviews-section {
+    margin: 55px auto;
+    padding: 50px 16px;
+  }
+
+  .reviews-heading h2 {
+    font-size: 28px;
+  }
+
+  .review-form {
+    padding: 24px 18px;
+    border-radius: 15px;
+  }
+
+  .reviews-list {
+    grid-template-columns: 1fr;
+  }
+
+  .review-card-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .average-rating strong {
+    font-size: 38px;
+  }
+
+  .review-stars-input {
+    gap: 5px;
+  }
+
+  .rating-star-button svg {
+    width: 30px;
+    height: 30px;
+  }
+}
