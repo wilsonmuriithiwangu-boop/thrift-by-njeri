@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Cropper from "react-easy-crop";
 import {
   ArrowLeft,
   ImagePlus,
@@ -9,6 +10,7 @@ import {
   Package,
   Tag,
   FileText,
+  RotateCcw,
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -24,6 +26,15 @@ function AddProduct() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
 
+  const [crop, setCrop] = useState({
+    x: 0,
+    y: 0,
+  });
+
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [showCropper, setShowCropper] = useState(false);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
 
@@ -33,15 +44,159 @@ function AddProduct() {
       return;
     }
 
+    if (!file.type.startsWith("image/")) {
+      alert("Please choose an image file.");
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+
     setSelectedFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    setPreviewUrl(imageUrl);
+
+    setCrop({
+      x: 0,
+      y: 0,
+    });
+
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setShowCropper(true);
+  };
+
+  const onCropComplete = (_, croppedPixels) => {
+    setCroppedAreaPixels(croppedPixels);
+  };
+
+  const createCroppedImage = async () => {
+    if (!previewUrl || !croppedAreaPixels) {
+      return null;
+    }
+
+    const image = new Image();
+
+    image.src = previewUrl;
+
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Could not create image canvas.");
+    }
+
+    const {
+      width,
+      height,
+      x,
+      y,
+    } = croppedAreaPixels;
+
+    canvas.width = width;
+    canvas.height = height;
+
+    context.drawImage(
+      image,
+      x,
+      y,
+      width,
+      height,
+      0,
+      0,
+      width,
+      height
+    );
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(
+              new Error("Could not create cropped image.")
+            );
+            return;
+          }
+
+          const croppedFile = new File(
+            [blob],
+            selectedFile?.name || "dress-photo.jpg",
+            {
+              type: "image/jpeg",
+            }
+          );
+
+          resolve(croppedFile);
+        },
+        "image/jpeg",
+        0.9
+      );
+    });
+  };
+
+  const handleCropConfirm = async () => {
+    try {
+      const croppedFile = await createCroppedImage();
+
+      if (!croppedFile) {
+        alert("Please crop the image first.");
+        return;
+      }
+
+      const croppedUrl =
+        URL.createObjectURL(croppedFile);
+
+      setSelectedFile(croppedFile);
+      setPreviewUrl(croppedUrl);
+      setShowCropper(false);
+    } catch (error) {
+      console.error("Error cropping image:", error);
+
+      alert("Something went wrong while cropping the image.");
+    }
+  };
+
+  const handleCropCancel = () => {
+    setShowCropper(false);
+
+    setSelectedFile(null);
+    setPreviewUrl("");
+
+    setCrop({
+      x: 0,
+      y: 0,
+    });
+
+    setZoom(1);
+    setCroppedAreaPixels(null);
+  };
+
+  const handleEditCrop = () => {
+    if (!previewUrl) {
+      return;
+    }
+
+    setCrop({
+      x: 0,
+      y: 0,
+    });
+
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setShowCropper(true);
   };
 
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();
 
     formData.append("file", file);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append(
+      "upload_preset",
+      CLOUDINARY_UPLOAD_PRESET
+    );
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -57,12 +212,15 @@ function AddProduct() {
 
     if (!response.ok) {
       throw new Error(
-        data?.error?.message || "Cloudinary image upload failed."
+        data?.error?.message ||
+          "Cloudinary image upload failed."
       );
     }
 
     if (!data.secure_url) {
-      throw new Error("Cloudinary did not return an image URL.");
+      throw new Error(
+        "Cloudinary did not return an image URL."
+      );
     }
 
     return data.secure_url;
@@ -86,7 +244,8 @@ function AddProduct() {
     try {
       setUploading(true);
 
-      const imageUrl = await uploadToCloudinary(selectedFile);
+      const imageUrl =
+        await uploadToCloudinary(selectedFile);
 
       await addDoc(collection(db, "products"), {
         name,
@@ -104,7 +263,9 @@ function AddProduct() {
     } catch (error) {
       console.error("Error adding dress:", error);
 
-      alert(`Something went wrong: ${error.message}`);
+      alert(
+        `Something went wrong: ${error.message}`
+      );
     } finally {
       setUploading(false);
     }
@@ -127,12 +288,15 @@ function AddProduct() {
 
           <section className="add-product-header">
             <div>
-              <p className="section-label">INVENTORY MANAGEMENT</p>
+              <p className="section-label">
+                INVENTORY MANAGEMENT
+              </p>
 
               <h1>Add New Dress</h1>
 
               <p>
-                Add a new piece to your Thrift by Njeri collection.
+                Add a new piece to your Thrift by Njeri
+                collection.
               </p>
             </div>
 
@@ -159,6 +323,7 @@ function AddProduct() {
 
                   <div>
                     <h2>Dress Information</h2>
+
                     <p>
                       Enter the basic details of this dress.
                     </p>
@@ -255,8 +420,10 @@ function AddProduct() {
 
                   <div>
                     <h2>Dress Photo</h2>
+
                     <p>
-                      Upload a clear photo of the dress.
+                      Upload and crop a clear photo of
+                      the dress.
                     </p>
                   </div>
                 </div>
@@ -280,7 +447,10 @@ function AddProduct() {
 
                       <div className="dress-image-overlay">
                         <ImagePlus size={24} />
-                        <span>Change Photo</span>
+
+                        <span>
+                          Change Photo
+                        </span>
                       </div>
 
                     </div>
@@ -296,7 +466,8 @@ function AddProduct() {
                       </h3>
 
                       <p>
-                        Click here to upload your product image
+                        Click here to upload your
+                        product image
                       </p>
 
                       <span>
@@ -318,17 +489,28 @@ function AddProduct() {
                 </label>
 
                 {selectedFile && (
-                  <div className="selected-file-info">
-                    <CheckCircle size={17} />
+                  <>
+                    <div className="selected-file-info">
+                      <CheckCircle size={17} />
 
-                    <span>
-                      {selectedFile.name}
-                    </span>
+                      <span>
+                        {selectedFile.name}
+                      </span>
 
-                    <small>
-                      Ready to upload
-                    </small>
-                  </div>
+                      <small>
+                        Ready to upload
+                      </small>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="crop-again-button"
+                      onClick={handleEditCrop}
+                    >
+                      <RotateCcw size={16} />
+                      Crop Photo Again
+                    </button>
+                  </>
                 )}
 
               </section>
@@ -350,23 +532,34 @@ function AddProduct() {
                 </h2>
 
                 <p>
-                  Once added, the dress will appear automatically
-                  in your Shop and New Arrivals sections.
+                  Once added, the dress will appear
+                  automatically in your Shop and New
+                  Arrivals sections.
                 </p>
 
                 <div className="summary-feature">
                   <CheckCircle size={17} />
-                  <span>Visible in your store</span>
+
+                  <span>
+                    Visible in your store
+                  </span>
                 </div>
 
                 <div className="summary-feature">
                   <CheckCircle size={17} />
-                  <span>Stock can be managed later</span>
+
+                  <span>
+                    Stock can be managed later
+                  </span>
                 </div>
 
                 <div className="summary-feature">
                   <CheckCircle size={17} />
-                  <span>Customers can order through WhatsApp</span>
+
+                  <span>
+                    Customers can order through
+                    WhatsApp
+                  </span>
                 </div>
 
                 <button
@@ -400,8 +593,8 @@ function AddProduct() {
                 <strong>💡 Quick tip</strong>
 
                 <p>
-                  Use a clear, well-lit photo so customers can
-                  easily see the dress.
+                  Use a clear, well-lit photo so customers
+                  can easily see the dress.
                 </p>
               </div>
 
@@ -411,8 +604,90 @@ function AddProduct() {
 
         </div>
       </main>
+
+      {/* IMAGE CROPPER */}
+
+      {showCropper && previewUrl && (
+        <div className="cropper-modal">
+
+          <div className="cropper-container">
+
+            <div className="cropper-header">
+              <div>
+                <p className="section-label">
+                  PHOTO EDITOR
+                </p>
+
+                <h2>Crop Dress Photo</h2>
+
+                <p>
+                  Adjust the photo so the dress is
+                  positioned nicely.
+                </p>
+              </div>
+            </div>
+
+            <div className="cropper-area">
+              <Cropper
+                image={previewUrl}
+                crop={crop}
+                zoom={zoom}
+                aspect={4 / 5}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="cropper-controls">
+
+              <label htmlFor="zoom">
+                Zoom
+              </label>
+
+              <input
+                id="zoom"
+                type="range"
+                min="1"
+                max="3"
+                step="0.1"
+                value={zoom}
+                onChange={(event) =>
+                  setZoom(Number(event.target.value))
+                }
+              />
+
+              <span>
+                {zoom.toFixed(1)}x
+              </span>
+
+            </div>
+
+            <div className="cropper-actions">
+
+              <button
+                type="button"
+                className="cancel-add-product"
+                onClick={handleCropCancel}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="primary-button"
+                onClick={handleCropConfirm}
+              >
+                <CheckCircle size={18} />
+                Use This Crop
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
     </>
   );
 }
-
-export default AddProduct;

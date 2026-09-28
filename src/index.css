@@ -554,3 +554,136 @@ body {
     height: 18px;
   }
 }
+/* ================================
+   PRODUCT PHOTO CROPPER
+================================ */
+
+.cropper-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.cropper-container {
+  width: min(700px, 100%);
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  box-sizing: border-box;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+}
+
+.cropper-header {
+  margin-bottom: 18px;
+}
+
+.cropper-header h2 {
+  margin: 4px 0 6px;
+}
+
+.cropper-header p:last-child {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.cropper-area {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  background: #111;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cropper-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cropper-controls label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cropper-controls input[type="range"] {
+  flex: 1;
+  accent-color: #d99ab3;
+}
+
+.cropper-controls span {
+  min-width: 38px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cropper-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cropper-actions button {
+  min-height: 44px;
+}
+
+.crop-again-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 10px 15px;
+  border: 1px solid #e5b6c9;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.crop-again-button:hover {
+  background: #fce7ef;
+  border-color: #d99ab3;
+}
+
+@media (max-width: 600px) {
+  .cropper-modal {
+    padding: 10px;
+  }
+
+  .cropper-container {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .cropper-area {
+    height: 360px;
+  }
+
+  .cropper-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cropper-actions button {
+    width: 100%;
+  }
+
+  .cropper-controls {
+    gap: 8px;
+  }
+}
