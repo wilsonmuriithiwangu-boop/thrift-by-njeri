@@ -1425,3 +1425,157 @@ body {
     width: 100%;
   }
 }
+/* =========================================
+   FINAL MOBILE FIX - ADD NEW DRESS
+========================================= */
+
+@media (max-width: 600px) {
+
+  .admin-page {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 20px 14px 45px;
+    margin: 0;
+  }
+
+  .admin-header {
+    width: 100%;
+    margin-bottom: 22px;
+  }
+
+  .admin-header .back-link {
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+
+  .admin-title {
+    width: 100%;
+    text-align: left;
+  }
+
+  .admin-title h1 {
+    font-size: 25px;
+    line-height: 1.2;
+  }
+
+  .admin-title p:last-child {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Force the form and preview to stack properly */
+  .admin-form-layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 18px;
+  }
+
+  .admin-form-card,
+  .admin-preview-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .admin-form-card {
+    order: 1;
+  }
+
+  .admin-preview-card {
+    order: 2;
+    position: static;
+  }
+
+  /* Section spacing */
+  .admin-form-section {
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+  }
+
+  .admin-form-section h2 {
+    font-size: 17px;
+    margin-bottom: 17px;
+  }
+
+  /* Stack every form row */
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+  }
+
+  .form-group {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 17px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-group input {
+    height: 44px;
+  }
+
+  .form-group textarea {
+    min-height: 110px;
+  }
+
+  /* Photo upload */
+  .image-upload-box {
+    width: 100%;
+    min-height: 210px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Preview image */
+  .admin-product-preview {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .admin-product-preview > img,
+  .admin-preview-placeholder {
+    width: 100%;
+    height: 260px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Buttons */
+  .admin-form-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .admin-form-actions > button,
+  .admin-form-actions > a {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Prevent anything from creating horizontal scrolling */
+  .admin-page *,
+  .admin-form-layout *,
+  .admin-form-card *,
+  .admin-preview-card * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
