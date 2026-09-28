@@ -918,3 +918,510 @@ body {
     width: 100%;
   }
 }
+/* =========================================
+   ADVANCED ADD DRESS ADMIN PAGE
+========================================= */
+
+.admin-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 24px 70px;
+}
+
+.admin-header {
+  margin-bottom: 32px;
+}
+
+.admin-header .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 24px;
+}
+
+.admin-title {
+  text-align: left;
+}
+
+.admin-title .section-label {
+  margin-bottom: 8px;
+}
+
+.admin-title h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+}
+
+.admin-title p:last-child {
+  margin-top: 10px;
+  color: #777;
+  font-size: 15px;
+}
+
+/* Main two-column layout */
+
+.admin-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.85fr);
+  gap: 28px;
+  align-items: start;
+}
+
+/* Main form card */
+
+.admin-form-card {
+  background: #fff;
+
+  border: 1px solid #eadbe2;
+  border-radius: 18px;
+
+  padding: 30px;
+
+  box-shadow:
+    0 8px 30px rgba(90, 50, 70, 0.07);
+}
+
+.admin-form-section {
+  padding-bottom: 28px;
+  margin-bottom: 28px;
+
+  border-bottom: 1px solid #f0e5ea;
+}
+
+.admin-form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-form-section h2 {
+  margin: 0 0 22px;
+
+  font-size: 19px;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Form fields */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dfd3d9;
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #222;
+
+  padding: 12px 14px;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.form-group input {
+  height: 46px;
+}
+
+.form-group textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #aaa;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #d99ab3;
+
+  background: #fffafb;
+
+  box-shadow:
+    0 0 0 3px rgba(217, 154, 179, 0.12);
+}
+
+/* Price + quantity */
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* =========================================
+   PHOTO UPLOAD
+========================================= */
+
+.image-upload-box {
+  position: relative;
+
+  width: 100%;
+  min-height: 260px;
+
+  border: 2px dashed #e4bdcd;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffafd 0%,
+      #fff5f8 100%
+    );
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.image-upload-box:hover {
+  border-color: #d99ab3;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff7fa 0%,
+      #fceaf1 100%
+    );
+
+  transform: translateY(-1px);
+}
+
+.image-upload-box > svg {
+  color: #d99ab3;
+}
+
+.image-upload-box strong {
+  color: #333;
+  font-size: 15px;
+}
+
+.image-upload-box > span {
+  color: #888;
+  font-size: 13px;
+}
+
+.selected-image-preview {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.selected-image-preview img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  background: #f7f7f7;
+}
+
+.selected-image-overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  background: rgba(0, 0, 0, 0.42);
+
+  color: #fff;
+
+  opacity: 0;
+
+  transition: opacity 0.2s ease;
+}
+
+.image-upload-box:hover
+.selected-image-overlay {
+  opacity: 1;
+}
+
+.selected-image-overlay span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================================
+   FORM BUTTONS
+========================================= */
+
+.admin-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 28px;
+  padding-top: 24px;
+
+  border-top: 1px solid #f0e5ea;
+}
+
+.admin-form-actions .primary-button,
+.admin-form-actions .secondary-button {
+  min-height: 44px;
+}
+
+/* =========================================
+   LIVE PREVIEW CARD
+========================================= */
+
+.admin-preview-card {
+  position: sticky;
+  top: 90px;
+
+  background: #fff;
+
+  border: 1px solid #eadbe2;
+  border-radius: 18px;
+
+  padding: 24px;
+
+  box-shadow:
+    0 8px 30px rgba(90, 50, 70, 0.07);
+}
+
+.admin-preview-card .section-label {
+  margin-bottom: 6px;
+}
+
+.admin-preview-card h2 {
+  margin: 0 0 20px;
+
+  font-size: 20px;
+}
+
+/* Product preview */
+
+.admin-product-preview {
+  overflow: hidden;
+
+  border: 1px solid #eee0e6;
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+.admin-product-preview > img,
+.admin-preview-placeholder {
+  width: 100%;
+  height: 330px;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+.admin-preview-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff7fa,
+      #f9edf2
+    );
+
+  color: #c99aad;
+}
+
+.admin-preview-placeholder span {
+  font-size: 13px;
+  color: #999;
+}
+
+.admin-preview-info {
+  padding: 18px;
+}
+
+.admin-preview-info p {
+  margin: 0 0 6px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+
+  color: #b57d94;
+}
+
+.admin-preview-info h3 {
+  margin: 0 0 10px;
+
+  font-size: 18px;
+}
+
+.admin-preview-info strong {
+  display: block;
+
+  font-size: 17px;
+
+  color: #222;
+}
+
+.admin-preview-info span {
+  display: block;
+
+  margin-top: 7px;
+
+  font-size: 13px;
+
+  color: #777;
+}
+
+/* =========================================
+   CROP AGAIN BUTTON
+========================================= */
+
+.crop-again-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  margin-top: 12px;
+
+  padding: 10px 15px;
+
+  border: 1px solid #e5b6c9;
+  border-radius: 9px;
+
+  background: #fff;
+  color: #333;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.crop-again-button:hover {
+  background: #fce7ef;
+  border-color: #d99ab3;
+}
+
+/* =========================================
+   MOBILE ADMIN PAGE
+========================================= */
+
+@media (max-width: 850px) {
+  .admin-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-preview-card {
+    position: static;
+  }
+
+  .admin-preview-card {
+    order: 2;
+  }
+
+  .admin-form-card {
+    order: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-page {
+    padding: 25px 16px 50px;
+  }
+
+  .admin-title h1 {
+    font-size: 27px;
+  }
+
+  .admin-form-card,
+  .admin-preview-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .image-upload-box {
+    min-height: 230px;
+  }
+
+  .admin-product-preview > img,
+  .admin-preview-placeholder {
+    height: 280px;
+  }
+
+  .admin-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .admin-form-actions > * {
+    width: 100%;
+  }
+}
