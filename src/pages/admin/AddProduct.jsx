@@ -1,129 +1,168 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cropper from "react-easy-crop";
 import {
   ArrowLeft,
-  ImagePlus,
-  Plus,
   Upload,
-  CheckCircle,
-  Package,
-  Tag,
-  FileText,
-  RotateCcw,
+  Image as ImageIcon,
+  Save,
+  X,
+  Crop,
 } from "lucide-react";
 import Navbar from "../../components/Navbar";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
+import ReactCrop, {
+  centerCrop,
+  makeAspectCrop,
+  convertToPixelCrop,
+} from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const CLOUDINARY_CLOUD_NAME = "jhzszqrd";
 const CLOUDINARY_UPLOAD_PRESET = "thrift_by_njeri";
 
+function centerAspectCrop(mediaWidth, mediaHeight, aspect) {
+  return centerCrop(
+    makeAspectCrop(
+      {
+        unit: "%",
+        width: 80,
+      },
+      aspect,
+      mediaWidth,
+      mediaHeight
+    ),
+    mediaWidth,
+    mediaHeight
+  );
+}
+
 function AddProduct() {
   const navigate = useNavigate();
 
-  const [uploading, setUploading] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState("");
-
-  const [crop, setCrop] = useState({
-    x: 0,
-    y: 0,
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    quantity: "",
+    description: "",
+    category: "Dresses",
   });
 
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [originalImageUrl, setOriginalImageUrl] = useState("");
+
+  const [crop, setCrop] = useState();
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [imageElement, setImageElement] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
 
+  const [uploading, setUploading] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
   const handleFileChange = (event) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
 
     if (!file) {
-      setSelectedFile(null);
-      setPreviewUrl("");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      alert("Please choose an image file.");
+      alert("Please select an image file.");
       return;
     }
 
     const imageUrl = URL.createObjectURL(file);
 
     setSelectedFile(file);
+    setOriginalImageUrl(imageUrl);
     setPreviewUrl(imageUrl);
-
-    setCrop({
-      x: 0,
-      y: 0,
-    });
-
-    setZoom(1);
-    setCroppedAreaPixels(null);
+    setCrop(undefined);
+    setCompletedCrop(null);
     setShowCropper(true);
   };
 
-  const onCropComplete = (_, croppedPixels) => {
-    setCroppedAreaPixels(croppedPixels);
+  const handleImageLoad = (event) => {
+    const { width, height } = event.currentTarget;
+
+    setImageElement(event.currentTarget);
+
+    const initialCrop = centerAspectCrop(
+      width,
+      height,
+      4 / 5
+    );
+
+    setCrop(initialCrop);
   };
 
   const createCroppedImage = async () => {
-    if (!previewUrl || !croppedAreaPixels) {
+    if (!completedCrop || !imageElement) {
       return null;
     }
 
-    const image = new Image();
-
-    image.src = previewUrl;
-
-    await new Promise((resolve, reject) => {
-      image.onload = resolve;
-      image.onerror = reject;
-    });
-
     const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
 
-    if (!context) {
-      throw new Error("Could not create image canvas.");
-    }
+    const scaleX =
+      imageElement.naturalWidth / imageElement.width;
 
-    const {
-      width,
-      height,
-      x,
-      y,
-    } = croppedAreaPixels;
+    const scaleY =
+      imageElement.naturalHeight / imageElement.height;
 
-    canvas.width = width;
-    canvas.height = height;
-
-    context.drawImage(
-      image,
-      x,
-      y,
-      width,
-      height,
-      0,
-      0,
-      width,
-      height
+    const pixelCrop = convertToPixelCrop(
+      completedCrop,
+      imageElement.width,
+      imageElement.height
     );
 
-    return new Promise((resolve, reject) => {
+    canvas.width = Math.floor(
+      pixelCrop.width * scaleX
+    );
+
+    canvas.height = Math.floor(
+      pixelCrop.height * scaleY
+    );
+
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) {
+      return null;
+    }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+
+    ctx.drawImage(
+      imageElement,
+      pixelCrop.x * scaleX,
+      pixelCrop.y * scaleY,
+      pixelCrop.width * scaleX,
+      pixelCrop.height * scaleY,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    return new Promise((resolve) => {
       canvas.toBlob(
         (blob) => {
           if (!blob) {
-            reject(
-              new Error("Could not create cropped image.")
-            );
+            resolve(null);
             return;
           }
 
           const croppedFile = new File(
             [blob],
-            selectedFile?.name || "dress-photo.jpg",
+            "thrift-by-njeri-cropped.jpg",
             {
               type: "image/jpeg",
             }
@@ -132,94 +171,95 @@ function AddProduct() {
           resolve(croppedFile);
         },
         "image/jpeg",
-        0.9
+        0.92
       );
     });
   };
 
   const handleCropConfirm = async () => {
-    try {
-      const croppedFile = await createCroppedImage();
-
-      if (!croppedFile) {
-        alert("Please crop the image first.");
-        return;
-      }
-
-      const croppedUrl =
-        URL.createObjectURL(croppedFile);
-
-      setSelectedFile(croppedFile);
-      setPreviewUrl(croppedUrl);
-      setShowCropper(false);
-    } catch (error) {
-      console.error("Error cropping image:", error);
-
-      alert("Something went wrong while cropping the image.");
+    if (!completedCrop || !imageElement) {
+      alert("Please select the area you want to keep.");
+      return;
     }
+
+    const croppedFile = await createCroppedImage();
+
+    if (!croppedFile) {
+      alert("Could not crop the image. Please try again.");
+      return;
+    }
+
+    const croppedUrl = URL.createObjectURL(croppedFile);
+
+    setSelectedFile(croppedFile);
+    setPreviewUrl(croppedUrl);
+    setShowCropper(false);
   };
 
   const handleCropCancel = () => {
     setShowCropper(false);
 
+    if (originalImageUrl) {
+      URL.revokeObjectURL(originalImageUrl);
+    }
+
     setSelectedFile(null);
     setPreviewUrl("");
-
-    setCrop({
-      x: 0,
-      y: 0,
-    });
-
-    setZoom(1);
-    setCroppedAreaPixels(null);
+    setOriginalImageUrl("");
+    setCrop(undefined);
+    setCompletedCrop(null);
+    setImageElement(null);
   };
 
-  const handleEditCrop = () => {
+  const handleCropAgain = () => {
     if (!previewUrl) {
       return;
     }
 
-    setCrop({
-      x: 0,
-      y: 0,
-    });
-
-    setZoom(1);
-    setCroppedAreaPixels(null);
+    setOriginalImageUrl(previewUrl);
+    setCrop(undefined);
+    setCompletedCrop(null);
+    setImageElement(null);
     setShowCropper(true);
   };
 
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
+  const uploadToCloudinary = async () => {
+    if (!selectedFile) {
+      return "";
+    }
 
-    formData.append("file", file);
-    formData.append(
+    const cloudinaryFormData = new FormData();
+
+    cloudinaryFormData.append(
+      "file",
+      selectedFile
+    );
+
+    cloudinaryFormData.append(
       "upload_preset",
       CLOUDINARY_UPLOAD_PRESET
+    );
+
+    cloudinaryFormData.append(
+      "folder",
+      "thrift-by-njeri/products"
     );
 
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
         method: "POST",
-        body: formData,
+        body: cloudinaryFormData,
       }
     );
 
     const data = await response.json();
 
-    console.log("Cloudinary response:", data);
-
     if (!response.ok) {
+      console.error("Cloudinary error:", data);
       throw new Error(
-        data?.error?.message ||
-          "Cloudinary image upload failed."
-      );
-    }
-
-    if (!data.secure_url) {
-      throw new Error(
-        "Cloudinary did not return an image URL."
+        data.error?.message ||
+          "Image upload failed."
       );
     }
 
@@ -229,15 +269,26 @@ function AddProduct() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const form = event.target;
+    if (!formData.name.trim()) {
+      alert("Please enter the dress name.");
+      return;
+    }
 
-    const name = form.name.value.trim();
-    const price = Number(form.price.value);
-    const quantity = Number(form.quantity.value);
-    const description = form.description.value.trim();
+    if (!formData.price || Number(formData.price) <= 0) {
+      alert("Please enter a valid price.");
+      return;
+    }
+
+    if (
+      formData.quantity === "" ||
+      Number(formData.quantity) < 0
+    ) {
+      alert("Please enter a valid quantity.");
+      return;
+    }
 
     if (!selectedFile) {
-      alert("Please choose a photo of the dress.");
+      alert("Please upload a dress photo.");
       return;
     }
 
@@ -245,26 +296,34 @@ function AddProduct() {
       setUploading(true);
 
       const imageUrl =
-        await uploadToCloudinary(selectedFile);
+        await uploadToCloudinary();
 
-      await addDoc(collection(db, "products"), {
-        name,
-        category: "Dresses",
-        price,
-        quantity,
-        description,
-        imageUrl,
-        createdAt: serverTimestamp(),
-      });
+      await addDoc(
+        collection(db, "products"),
+        {
+          name: formData.name.trim(),
+          price: Number(formData.price),
+          quantity: Number(formData.quantity),
+          description:
+            formData.description.trim(),
+          category: "Dresses",
+          imageUrl,
+          createdAt: serverTimestamp(),
+        }
+      );
 
       alert("Dress added successfully!");
 
       navigate("/admin/dashboard");
     } catch (error) {
-      console.error("Error adding dress:", error);
+      console.error(
+        "Error adding product:",
+        error
+      );
 
       alert(
-        `Something went wrong: ${error.message}`
+        error.message ||
+          "Something went wrong while adding the dress."
       );
     } finally {
       setUploading(false);
@@ -275,401 +334,288 @@ function AddProduct() {
     <>
       <Navbar />
 
-      <main className="admin-page add-product-page">
-        <div className="add-product-container">
-
+      <main className="page admin-page">
+        <div className="admin-header">
           <Link
             to="/admin/dashboard"
-            className="add-product-back"
+            className="back-link"
           >
-            <ArrowLeft size={17} />
+            <ArrowLeft size={18} />
             Back to Dashboard
           </Link>
 
-          <section className="add-product-header">
-            <div>
-              <p className="section-label">
-                INVENTORY MANAGEMENT
-              </p>
+          <div className="admin-title">
+            <p className="section-label">
+              ADMIN
+            </p>
 
-              <h1>Add New Dress</h1>
+            <h1>Add New Dress</h1>
 
-              <p>
-                Add a new piece to your Thrift by Njeri
-                collection.
-              </p>
-            </div>
+            <p>
+              Add a dress to your Thrift by Njeri
+              collection.
+            </p>
+          </div>
+        </div>
 
-            <div className="add-product-header-icon">
-              <Plus size={28} />
-            </div>
-          </section>
-
+        <div className="admin-form-layout">
           <form
-            className="add-product-form"
+            className="admin-form-card"
             onSubmit={handleSubmit}
           >
+            <div className="admin-form-section">
+              <h2>Dress Information</h2>
 
-            <div className="add-product-form-main">
-
-              {/* BASIC INFORMATION */}
-
-              <section className="add-product-card">
-
-                <div className="add-product-card-heading">
-                  <div className="add-product-card-icon">
-                    <Tag size={19} />
-                  </div>
-
-                  <div>
-                    <h2>Dress Information</h2>
-
-                    <p>
-                      Enter the basic details of this dress.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="add-product-fields">
-
-                  <div className="form-group">
-                    <label htmlFor="name">
-                      Dress Name
-                    </label>
-
-                    <input
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="e.g. Black Bodycon Dress"
-                      required
-                    />
-                  </div>
-
-                  <div className="add-product-two-columns">
-
-                    <div className="form-group">
-                      <label htmlFor="price">
-                        Price
-                      </label>
-
-                      <div className="input-with-prefix">
-                        <span>KSh</span>
-
-                        <input
-                          id="price"
-                          name="price"
-                          type="number"
-                          placeholder="Enter price"
-                          min="0"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="quantity">
-                        Quantity
-                      </label>
-
-                      <div className="input-with-icon">
-                        <Package size={17} />
-
-                        <input
-                          id="quantity"
-                          name="quantity"
-                          type="number"
-                          placeholder="Enter quantity"
-                          min="0"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="description">
-                      Description
-                    </label>
-
-                    <div className="textarea-wrapper">
-                      <FileText size={17} />
-
-                      <textarea
-                        id="description"
-                        name="description"
-                        rows="5"
-                        placeholder="Describe the dress, size, colour, material or anything customers should know..."
-                        required
-                      />
-                    </div>
-                  </div>
-
-                </div>
-              </section>
-
-              {/* PHOTO */}
-
-              <section className="add-product-card">
-
-                <div className="add-product-card-heading">
-                  <div className="add-product-card-icon">
-                    <ImagePlus size={19} />
-                  </div>
-
-                  <div>
-                    <h2>Dress Photo</h2>
-
-                    <p>
-                      Upload and crop a clear photo of
-                      the dress.
-                    </p>
-                  </div>
-                </div>
-
-                <label
-                  htmlFor="image"
-                  className={
-                    selectedFile
-                      ? "dress-upload-area has-image"
-                      : "dress-upload-area"
-                  }
-                >
-
-                  {previewUrl ? (
-                    <div className="dress-image-preview">
-
-                      <img
-                        src={previewUrl}
-                        alt="Dress preview"
-                      />
-
-                      <div className="dress-image-overlay">
-                        <ImagePlus size={24} />
-
-                        <span>
-                          Change Photo
-                        </span>
-                      </div>
-
-                    </div>
-                  ) : (
-                    <div className="upload-empty-state">
-
-                      <div className="upload-icon-circle">
-                        <ImagePlus size={28} />
-                      </div>
-
-                      <h3>
-                        Choose a dress photo
-                      </h3>
-
-                      <p>
-                        Click here to upload your
-                        product image
-                      </p>
-
-                      <span>
-                        PNG, JPG, JPEG or WEBP
-                      </span>
-
-                    </div>
-                  )}
-
-                  <input
-                    id="image"
-                    name="image"
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp"
-                    onChange={handleFileChange}
-                    required={!selectedFile}
-                  />
-
+              <div className="form-group">
+                <label htmlFor="name">
+                  Dress Name
                 </label>
 
-                {selectedFile && (
-                  <>
-                    <div className="selected-file-info">
-                      <CheckCircle size={17} />
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="e.g. Blue Mini Dress"
+                />
+              </div>
 
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="price">
+                    Price (KSh)
+                  </label>
+
+                  <input
+                    id="price"
+                    name="price"
+                    type="number"
+                    min="0"
+                    value={formData.price}
+                    onChange={handleChange}
+                    placeholder="Enter price"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="quantity">
+                    Quantity
+                  </label>
+
+                  <input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min="0"
+                    value={formData.quantity}
+                    onChange={handleChange}
+                    placeholder="Enter quantity"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="description">
+                  Description
+                </label>
+
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="5"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe the dress..."
+                />
+              </div>
+            </div>
+
+            <div className="admin-form-section">
+              <h2>Dress Photo</h2>
+
+              <label
+                htmlFor="image"
+                className="image-upload-box"
+              >
+                {previewUrl ? (
+                  <div className="selected-image-preview">
+                    <img
+                      src={previewUrl}
+                      alt="Selected dress"
+                    />
+
+                    <div className="selected-image-overlay">
+                      <Upload size={20} />
                       <span>
-                        {selectedFile.name}
+                        Choose another photo
                       </span>
-
-                      <small>
-                        Ready to upload
-                      </small>
                     </div>
+                  </div>
+                ) : (
+                  <>
+                    <ImageIcon size={40} />
 
-                    <button
-                      type="button"
-                      className="crop-again-button"
-                      onClick={handleEditCrop}
-                    >
-                      <RotateCcw size={16} />
-                      Crop Photo Again
-                    </button>
+                    <strong>
+                      Upload Dress Photo
+                    </strong>
+
+                    <span>
+                      Click to choose an image
+                    </span>
                   </>
                 )}
 
-              </section>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  hidden
+                />
+              </label>
 
+              {previewUrl && !showCropper && (
+                <button
+                  type="button"
+                  className="crop-again-button"
+                  onClick={handleCropAgain}
+                >
+                  <Crop size={17} />
+                  Crop Photo Again
+                </button>
+              )}
             </div>
 
-            {/* SIDE SUMMARY */}
+            <div className="admin-form-actions">
+              <Link
+                to="/admin/dashboard"
+                className="secondary-button"
+              >
+                Cancel
+              </Link>
 
-            <aside className="add-product-sidebar">
+              <button
+                type="submit"
+                className="primary-button"
+                disabled={uploading || showCropper}
+              >
+                <Save size={18} />
 
-              <div className="add-product-summary">
-
-                <p className="section-label">
-                  READY TO ADD?
-                </p>
-
-                <h2>
-                  Publish this dress
-                </h2>
-
-                <p>
-                  Once added, the dress will appear
-                  automatically in your Shop and New
-                  Arrivals sections.
-                </p>
-
-                <div className="summary-feature">
-                  <CheckCircle size={17} />
-
-                  <span>
-                    Visible in your store
-                  </span>
-                </div>
-
-                <div className="summary-feature">
-                  <CheckCircle size={17} />
-
-                  <span>
-                    Stock can be managed later
-                  </span>
-                </div>
-
-                <div className="summary-feature">
-                  <CheckCircle size={17} />
-
-                  <span>
-                    Customers can order through
-                    WhatsApp
-                  </span>
-                </div>
-
-                <button
-                  type="submit"
-                  className="primary-button add-product-submit"
-                  disabled={uploading}
-                >
-                  {uploading ? (
-                    <>
-                      <Upload size={18} />
-                      Uploading Dress...
-                    </>
-                  ) : (
-                    <>
-                      <Plus size={18} />
-                      Add Dress
-                    </>
-                  )}
-                </button>
-
-                <Link
-                  to="/admin/dashboard"
-                  className="cancel-add-product"
-                >
-                  Cancel
-                </Link>
-
-              </div>
-
-              <div className="add-product-tip">
-                <strong>💡 Quick tip</strong>
-
-                <p>
-                  Use a clear, well-lit photo so customers
-                  can easily see the dress.
-                </p>
-              </div>
-
-            </aside>
-
+                {uploading
+                  ? "Saving..."
+                  : "Save Dress"}
+              </button>
+            </div>
           </form>
 
+          <aside className="admin-preview-card">
+            <p className="section-label">
+              PREVIEW
+            </p>
+
+            <h2>Dress Preview</h2>
+
+            <div className="admin-product-preview">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Dress preview"
+                />
+              ) : (
+                <div className="admin-preview-placeholder">
+                  <ImageIcon size={35} />
+                  <span>
+                    Photo preview
+                  </span>
+                </div>
+              )}
+
+              <div className="admin-preview-info">
+                <p>
+                  {formData.category}
+                </p>
+
+                <h3>
+                  {formData.name ||
+                    "Dress Name"}
+                </h3>
+
+                <strong>
+                  KSh{" "}
+                  {formData.price
+                    ? Number(
+                        formData.price
+                      ).toLocaleString()
+                    : "0"}
+                </strong>
+
+                <span>
+                  {formData.quantity === ""
+                    ? "Quantity not set"
+                    : `${formData.quantity} available`}
+                </span>
+              </div>
+            </div>
+          </aside>
         </div>
       </main>
 
-      {/* IMAGE CROPPER */}
-
-      {showCropper && previewUrl && (
+      {showCropper && originalImageUrl && (
         <div className="cropper-modal">
-
           <div className="cropper-container">
-
             <div className="cropper-header">
-              <div>
-                <p className="section-label">
-                  PHOTO EDITOR
-                </p>
+              <p className="section-label">
+                EDIT PHOTO
+              </p>
 
-                <h2>Crop Dress Photo</h2>
+              <h2>
+                Crop Your Dress Photo
+              </h2>
 
-                <p>
-                  Adjust the photo so the dress is
-                  positioned nicely.
-                </p>
-              </div>
+              <p>
+                Drag and resize the box to keep
+                only the part of the photo you want.
+              </p>
             </div>
 
-            <div className="cropper-area">
-              <Cropper
-                image={previewUrl}
+            <div className="free-crop-area">
+              <ReactCrop
                 crop={crop}
-                zoom={zoom}
-                aspect={4 / 5}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
+                onChange={(pixelCrop, percentCrop) =>
+                  setCrop(percentCrop)
+                }
+                onComplete={(pixelCrop) =>
+                  setCompletedCrop(pixelCrop)
+                }
+                keepSelection
+                minWidth={80}
+                minHeight={80}
+              >
+                <img
+                  src={originalImageUrl}
+                  alt="Crop preview"
+                  onLoad={handleImageLoad}
+                />
+              </ReactCrop>
             </div>
 
-            <div className="cropper-controls">
-
-              <label htmlFor="zoom">
-                Zoom
-              </label>
-
-              <input
-                id="zoom"
-                type="range"
-                min="1"
-                max="3"
-                step="0.1"
-                value={zoom}
-                onChange={(event) =>
-                  setZoom(Number(event.target.value))
-                }
-              />
+            <div className="cropper-help">
+              <Crop size={17} />
 
               <span>
-                {zoom.toFixed(1)}x
+                Drag the box to move it.
+                Drag its corners or edges to resize it.
               </span>
-
             </div>
 
             <div className="cropper-actions">
-
               <button
                 type="button"
-                className="cancel-add-product"
+                className="secondary-button"
                 onClick={handleCropCancel}
               >
+                <X size={17} />
                 Cancel
               </button>
 
@@ -678,14 +624,11 @@ function AddProduct() {
                 className="primary-button"
                 onClick={handleCropConfirm}
               >
-                <CheckCircle size={18} />
-                Use This Crop
+                <Crop size={17} />
+                Crop Photo
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
     </>
