@@ -250,8 +250,10 @@ function Home() {
   </button>
 </div>
 <div className="delivery-message">
-  🚚 <strong>We Deliver Countrywide 🇰🇪</strong>
+  <strong>🚚 We Deliver Countrywide 🇰🇪</strong>
   <span>Get your favourite dress delivered anywhere in Kenya.</span>
+
+  <strong>📍 Located in Meru — Meru University, Nchiru.</strong>
 </div>
 
           </div>
