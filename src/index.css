@@ -425,3 +425,8 @@ code {
     line-height: 1.5;
   }
 }
+.bag-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

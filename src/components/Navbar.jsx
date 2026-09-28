@@ -30,18 +30,20 @@ function Navbar() {
         {/* Shopping Bag */}
         <div className="navbar-actions">
           <Link
-            to="/cart"
-            className="bag-button"
-            aria-label={`Shopping cart with ${cartCount} items`}
-          >
-            <ShoppingBag size={20} />
+  to="/cart"
+  className="bag-button"
+  aria-label={`Shopping cart with ${cartCount} items`}
+>
+  <ShoppingBag size={20} />
 
-            {cartCount > 0 && (
-              <span className="cart-count">
-                {cartCount}
-              </span>
-            )}
-          </Link>
+  <span>Cart</span>
+
+  {cartCount > 0 && (
+    <span className="cart-count">
+      {cartCount}
+    </span>
+  )}
+</Link>
         </div>
 
       </div>
