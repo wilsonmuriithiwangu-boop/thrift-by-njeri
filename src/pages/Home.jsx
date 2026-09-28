@@ -249,6 +249,10 @@ function Home() {
     Share Website
   </button>
 </div>
+<div className="delivery-message">
+  🚚 <strong>We Deliver Countrywide 🇰🇪</strong>
+  <span>Get your favourite dress delivered anywhere in Kenya.</span>
+</div>
 
           </div>
 
