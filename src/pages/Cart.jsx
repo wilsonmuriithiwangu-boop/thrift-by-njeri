@@ -88,53 +88,56 @@ function Cart() {
   };
 
   const handleProceedToOrder = () => {
-    if (selectedCartItems.length === 0) {
-      alert("Please select a dress to proceed with your order.");
-      return;
-    }
+  if (selectedCartItems.length === 0) {
+    alert("Please select a dress to proceed with your order.");
+    return;
+  }
 
-    let message = "Hello Thrift by Njeri! 👋\n\n";
+  let message = "Hello Thrift by Njeri! 👋\n\n";
 
-    message += "I would like to order the following dress";
-    message += selectedCartItems.length > 1 ? "es:\n\n" : ":\n\n";
+  message += "I would like to order the following dress";
+  message += selectedCartItems.length > 1 ? "es:\n\n" : ":\n\n";
 
-    selectedCartItems.forEach((item, index) => {
-      const price = Number(item.price || 0);
-      const itemTotal = price * item.cartQuantity;
-
-      message +=
-        index +
-        1 +
-        ". " +
-        item.name +
-        "\n" +
-        "Quantity: " +
-        item.cartQuantity +
-        "\n" +
-        "Price: KSh " +
-        price.toLocaleString() +
-        "\n" +
-        "Subtotal: KSh " +
-        itemTotal.toLocaleString() +
-        "\n\n";
-    });
+  selectedCartItems.forEach((item, index) => {
+    const price = Number(item.price || 0);
+    const itemTotal = price * item.cartQuantity;
 
     message +=
-      "Total: KSh " +
-      selectedTotal.toLocaleString() +
+      index +
+      1 +
+      ". " +
+      item.name +
+      "\n" +
+      "Quantity: " +
+      item.cartQuantity +
+      "\n" +
+      "Price: KSh " +
+      price.toLocaleString() +
+      "\n" +
+      "Subtotal: KSh " +
+      itemTotal.toLocaleString() +
+      "\n" +
+      "Front photo: " +
+      (item.imageUrl || "No photo available") +
       "\n\n";
+  });
 
-    message +=
-      "Please confirm availability and let me know how I can complete the order. Thank you! ❤️";
+  message +=
+    "Total: KSh " +
+    selectedTotal.toLocaleString() +
+    "\n\n";
 
-    const whatsappLink =
-      "https://wa.me/" +
-      WHATSAPP_NUMBER +
-      "?text=" +
-      encodeURIComponent(message);
+  message +=
+    "Please confirm availability and let me know how I can complete the order. Thank you! ❤️";
 
-    window.open(whatsappLink, "_blank");
-  };
+  const whatsappLink =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    encodeURIComponent(message);
+
+  window.open(whatsappLink, "_blank");
+};
 
   return (
     <>
