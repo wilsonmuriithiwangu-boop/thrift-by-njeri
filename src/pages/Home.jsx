@@ -184,15 +184,36 @@ function Home() {
       setSubmittingReview(false);
     }
   };
-  const handleShareWebsite = () => {
-  const message =
-    "Check out Thrift by Njeri 👗❤️\n\n" +
-    "Find stylish and affordable dresses here:\n" +
-    "https://thriftbynjeri.netlify.app/";
+  const handleShareWebsite = async () => {
+  const websiteUrl = "https://thriftbynjeri.netlify.app/";
+
+  const shareData = {
+    title: "Thrift by Njeri",
+    text:
+      "Check out Thrift by Njeri 👗❤️\n\n" +
+      "Find stylish and affordable dresses here:\n" +
+      websiteUrl,
+    url: websiteUrl,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      return;
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return;
+      }
+    }
+  }
 
   const whatsappLink =
     "https://wa.me/?text=" +
-    encodeURIComponent(message);
+    encodeURIComponent(
+      "Check out Thrift by Njeri 👗❤️\n\n" +
+      "Find stylish and affordable dresses here:\n" +
+      websiteUrl
+    );
 
   window.location.href = whatsappLink;
 };
