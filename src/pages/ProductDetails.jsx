@@ -6,11 +6,13 @@ import {
   ShoppingBag,
   Minus,
   Plus,
+  X,
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useCart } from "../CartContext";
+import "../App.css";
 
 const WHATSAPP_NUMBER = "254742095218";
 
@@ -22,6 +24,7 @@ function ProductDetails() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageFullScreen, setImageFullScreen] = useState(false);
   const [orderQuantity, setOrderQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState("front");
 
   const { addToCart } = useCart();
 
@@ -93,6 +96,14 @@ function ProductDetails() {
   const price = Number(product.price) || 0;
   const isSoldOut = quantity === 0;
 
+  const frontImage = product.imageUrl || "";
+  const backImage = product.backImageUrl || "";
+
+  const currentImage =
+    selectedImage === "back" && backImage
+      ? backImage
+      : frontImage;
+
   const orderTotal = price * orderQuantity;
 
   const handleDecreaseQuantity = () => {
@@ -152,7 +163,7 @@ function ProductDetails() {
 
   return (
     <>
-      {imageFullScreen && (
+      {imageFullScreen && currentImage && (
         <div
           className="fullscreen-image-viewer"
           onClick={() =>
@@ -167,12 +178,16 @@ function ProductDetails() {
             }
             aria-label="Close image"
           >
-            ×
+            <X size={24} />
           </button>
 
           <img
-            src={product.imageUrl}
-            alt={product.name}
+            src={currentImage}
+            alt={
+              selectedImage === "back"
+                ? `${product.name} back`
+                : `${product.name} front`
+            }
             onClick={(event) =>
               event.stopPropagation()
             }
@@ -195,23 +210,83 @@ function ProductDetails() {
 
           <div className="product-details-grid">
 
-            <div
-              className="product-details-image"
-              onClick={() =>
-                product.imageUrl &&
-                setImageFullScreen(true)
-              }
-            >
-              {product.imageUrl ? (
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                />
-              ) : (
-                <div className="product-image-placeholder">
-                  No Photo
+            <div className="product-gallery">
+
+              <div
+                className="product-details-image"
+                onClick={() =>
+                  currentImage &&
+                  setImageFullScreen(true)
+                }
+              >
+                {currentImage ? (
+                  <img
+                    src={currentImage}
+                    alt={
+                      selectedImage === "back"
+                        ? `${product.name} back`
+                        : `${product.name} front`
+                    }
+                  />
+                ) : (
+                  <div className="product-image-placeholder">
+                    No Photo
+                  </div>
+                )}
+              </div>
+
+              {frontImage && backImage && (
+                <div className="product-thumbnails">
+
+                  <button
+                    type="button"
+                    className={
+                      selectedImage === "front"
+                        ? "product-thumbnail active"
+                        : "product-thumbnail"
+                    }
+                    onClick={() =>
+                      setSelectedImage("front")
+                    }
+                    aria-label="View front photo"
+                  >
+                    <img
+                      src={frontImage}
+                      alt="Front of dress"
+                    />
+
+                    <span>Front</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={
+                      selectedImage === "back"
+                        ? "product-thumbnail active"
+                        : "product-thumbnail"
+                    }
+                    onClick={() =>
+                      setSelectedImage("back")
+                    }
+                    aria-label="View back photo"
+                  >
+                    <img
+                      src={backImage}
+                      alt="Back of dress"
+                    />
+
+                    <span>Back</span>
+                  </button>
+
                 </div>
               )}
+
+              {currentImage && (
+                <p className="image-view-hint">
+                  Click the photo to view it fullscreen.
+                </p>
+              )}
+
             </div>
 
             <div className="product-details-info">

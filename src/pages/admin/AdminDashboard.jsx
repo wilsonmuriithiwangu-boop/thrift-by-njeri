@@ -352,34 +352,40 @@ return (
                   key={product.id}
                 >
 
-                  <div className="admin-product-image">
-                    {product.imageUrl ? (
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                      />
-                    ) : (
-                      <div className="admin-no-image">
-                        No Photo
-                      </div>
-                    )}
+                 <div className="admin-product-image">
+  {product.imageUrl ? (
+    <img
+      src={product.imageUrl}
+      alt={product.name}
+    />
+  ) : (
+    <div className="admin-no-image">
+      No Photo
+    </div>
+  )}
 
-                    <span
-                      className={
-                        isSoldOut
-                          ? "admin-status sold"
-                          : isLowStock
-                          ? "admin-status low"
-                          : "admin-status available"
-                      }
-                    >
-                      {isSoldOut
-                        ? "SOLD OUT"
-                        : isLowStock
-                        ? "LOW STOCK"
-                        : "AVAILABLE"}
-                    </span>
-                  </div>
+  <span
+    className={
+      isSoldOut
+        ? "admin-status sold"
+        : isLowStock
+        ? "admin-status low"
+        : "admin-status available"
+    }
+  >
+    {isSoldOut
+      ? "SOLD OUT"
+      : isLowStock
+      ? "LOW STOCK"
+      : "AVAILABLE"}
+  </span>
+
+  {product.backImageUrl && (
+    <span className="admin-photo-count">
+      2 Photos
+    </span>
+  )}
+</div>
 
                   <div className="admin-product-content">
 

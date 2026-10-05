@@ -48,14 +48,23 @@ function AddProduct() {
     category: "Dresses",
   });
 
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [originalImageUrl, setOriginalImageUrl] = useState("");
+  // FRONT IMAGE
+  const [frontFile, setFrontFile] = useState(null);
+  const [frontPreviewUrl, setFrontPreviewUrl] = useState("");
+  const [frontOriginalUrl, setFrontOriginalUrl] = useState("");
 
+  // BACK IMAGE
+  const [backFile, setBackFile] = useState(null);
+  const [backPreviewUrl, setBackPreviewUrl] = useState("");
+  const [backOriginalUrl, setBackOriginalUrl] = useState("");
+
+  // CROPPER
   const [crop, setCrop] = useState();
   const [completedCrop, setCompletedCrop] = useState(null);
   const [imageElement, setImageElement] = useState(null);
+
   const [showCropper, setShowCropper] = useState(false);
+  const [cropSide, setCropSide] = useState(null);
 
   const [uploading, setUploading] = useState(false);
 
@@ -68,7 +77,11 @@ function AddProduct() {
     }));
   };
 
-  const handleFileChange = (event) => {
+  // --------------------------------------------------
+  // SELECT FRONT/BACK IMAGE
+  // --------------------------------------------------
+
+  const handleFileChange = (event, side) => {
     const file = event.target.files?.[0];
 
     if (!file) {
@@ -82,13 +95,29 @@ function AddProduct() {
 
     const imageUrl = URL.createObjectURL(file);
 
-    setSelectedFile(file);
-    setOriginalImageUrl(imageUrl);
-    setPreviewUrl(imageUrl);
+    setCropSide(side);
     setCrop(undefined);
     setCompletedCrop(null);
+    setImageElement(null);
     setShowCropper(true);
+
+    if (side === "front") {
+      setFrontFile(file);
+      setFrontOriginalUrl(imageUrl);
+      setFrontPreviewUrl(imageUrl);
+    } else {
+      setBackFile(file);
+      setBackOriginalUrl(imageUrl);
+      setBackPreviewUrl(imageUrl);
+    }
+
+    // Allow selecting the same image again later.
+    event.target.value = "";
   };
+
+  // --------------------------------------------------
+  // IMAGE LOAD
+  // --------------------------------------------------
 
   const handleImageLoad = (event) => {
     const { width, height } = event.currentTarget;
@@ -103,6 +132,10 @@ function AddProduct() {
 
     setCrop(initialCrop);
   };
+
+  // --------------------------------------------------
+  // CREATE CROPPED IMAGE
+  // --------------------------------------------------
 
   const createCroppedImage = async () => {
     if (!completedCrop || !imageElement) {
@@ -162,7 +195,7 @@ function AddProduct() {
 
           const croppedFile = new File(
             [blob],
-            "thrift-by-njeri-cropped.jpg",
+            `thrift-by-njeri-${cropSide}-cropped.jpg`,
             {
               type: "image/jpeg",
             }
@@ -175,6 +208,10 @@ function AddProduct() {
       );
     });
   };
+
+  // --------------------------------------------------
+  // CONFIRM CROP
+  // --------------------------------------------------
 
   const handleCropConfirm = async () => {
     if (!completedCrop || !imageElement) {
@@ -191,40 +228,106 @@ function AddProduct() {
 
     const croppedUrl = URL.createObjectURL(croppedFile);
 
-    setSelectedFile(croppedFile);
-    setPreviewUrl(croppedUrl);
+    if (cropSide === "front") {
+      setFrontFile(croppedFile);
+      setFrontPreviewUrl(croppedUrl);
+    }
+
+    if (cropSide === "back") {
+      setBackFile(croppedFile);
+      setBackPreviewUrl(croppedUrl);
+    }
+
     setShowCropper(false);
+    setCrop(undefined);
+    setCompletedCrop(null);
+    setImageElement(null);
   };
+
+  // --------------------------------------------------
+  // CANCEL CROP
+  // --------------------------------------------------
 
   const handleCropCancel = () => {
     setShowCropper(false);
 
-    if (originalImageUrl) {
-      URL.revokeObjectURL(originalImageUrl);
+    if (cropSide === "front") {
+      if (frontOriginalUrl) {
+        URL.revokeObjectURL(frontOriginalUrl);
+      }
+
+      setFrontFile(null);
+      setFrontPreviewUrl("");
+      setFrontOriginalUrl("");
     }
 
-    setSelectedFile(null);
-    setPreviewUrl("");
-    setOriginalImageUrl("");
+    if (cropSide === "back") {
+      if (backOriginalUrl) {
+        URL.revokeObjectURL(backOriginalUrl);
+      }
+
+      setBackFile(null);
+      setBackPreviewUrl("");
+      setBackOriginalUrl("");
+    }
+
     setCrop(undefined);
     setCompletedCrop(null);
     setImageElement(null);
+    setCropSide(null);
   };
 
-  const handleCropAgain = () => {
+  // --------------------------------------------------
+  // CROP AGAIN
+  // --------------------------------------------------
+
+  const handleCropAgain = (side) => {
+    const previewUrl =
+      side === "front"
+        ? frontPreviewUrl
+        : backPreviewUrl;
+
     if (!previewUrl) {
       return;
     }
 
-    setOriginalImageUrl(previewUrl);
+    setCropSide(side);
     setCrop(undefined);
     setCompletedCrop(null);
     setImageElement(null);
     setShowCropper(true);
+
+    if (side === "front") {
+      setFrontOriginalUrl(previewUrl);
+    } else {
+      setBackOriginalUrl(previewUrl);
+    }
   };
 
-  const uploadToCloudinary = async () => {
-    if (!selectedFile) {
+  // --------------------------------------------------
+  // REMOVE IMAGE
+  // --------------------------------------------------
+
+  const removeImage = (side) => {
+    if (side === "front") {
+      setFrontFile(null);
+      setFrontPreviewUrl("");
+      setFrontOriginalUrl("");
+    }
+
+    if (side === "back") {
+      setBackFile(null);
+      setBackPreviewUrl("");
+      setBackOriginalUrl("");
+    }
+  };
+
+  // --------------------------------------------------
+  // CLOUDINARY UPLOAD
+  // --------------------------------------------------
+
+  const uploadToCloudinary = async (file) => {
+    if (!file) {
       return "";
     }
 
@@ -232,7 +335,7 @@ function AddProduct() {
 
     cloudinaryFormData.append(
       "file",
-      selectedFile
+      file
     );
 
     cloudinaryFormData.append(
@@ -257,6 +360,7 @@ function AddProduct() {
 
     if (!response.ok) {
       console.error("Cloudinary error:", data);
+
       throw new Error(
         data.error?.message ||
           "Image upload failed."
@@ -266,6 +370,10 @@ function AddProduct() {
     return data.secure_url;
   };
 
+  // --------------------------------------------------
+  // SUBMIT
+  // --------------------------------------------------
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -274,7 +382,10 @@ function AddProduct() {
       return;
     }
 
-    if (!formData.price || Number(formData.price) <= 0) {
+    if (
+      !formData.price ||
+      Number(formData.price) <= 0
+    ) {
       alert("Please enter a valid price.");
       return;
     }
@@ -287,16 +398,24 @@ function AddProduct() {
       return;
     }
 
-    if (!selectedFile) {
-      alert("Please upload a dress photo.");
+    if (!frontFile) {
+      alert("Please upload the FRONT photo of the dress.");
+      return;
+    }
+
+    if (!backFile) {
+      alert("Please upload the BACK photo of the dress.");
       return;
     }
 
     try {
       setUploading(true);
 
-      const imageUrl =
-        await uploadToCloudinary();
+      const frontImageUrl =
+        await uploadToCloudinary(frontFile);
+
+      const backImageUrl =
+        await uploadToCloudinary(backFile);
 
       await addDoc(
         collection(db, "products"),
@@ -307,7 +426,14 @@ function AddProduct() {
           description:
             formData.description.trim(),
           category: "Dresses",
-          imageUrl,
+
+          // Keep imageUrl for compatibility
+          // with existing products.
+          imageUrl: frontImageUrl,
+
+          // New back image field.
+          backImageUrl: backImageUrl,
+
           createdAt: serverTimestamp(),
         }
       );
@@ -336,6 +462,7 @@ function AddProduct() {
 
       <main className="page admin-page">
         <div className="admin-header">
+
           <Link
             to="/admin/dashboard"
             className="back-link"
@@ -345,6 +472,7 @@ function AddProduct() {
           </Link>
 
           <div className="admin-title">
+
             <p className="section-label">
               ADMIN
             </p>
@@ -355,18 +483,25 @@ function AddProduct() {
               Add a dress to your Thrift by Njeri
               collection.
             </p>
+
           </div>
         </div>
 
         <div className="admin-form-layout">
+
           <form
             className="admin-form-card"
             onSubmit={handleSubmit}
           >
+
+            {/* DRESS INFORMATION */}
+
             <div className="admin-form-section">
+
               <h2>Dress Information</h2>
 
               <div className="form-group">
+
                 <label htmlFor="name">
                   Dress Name
                 </label>
@@ -379,10 +514,13 @@ function AddProduct() {
                   onChange={handleChange}
                   placeholder="e.g. Blue Mini Dress"
                 />
+
               </div>
 
               <div className="form-row">
+
                 <div className="form-group">
+
                   <label htmlFor="price">
                     Price (KSh)
                   </label>
@@ -396,9 +534,11 @@ function AddProduct() {
                     onChange={handleChange}
                     placeholder="Enter price"
                   />
+
                 </div>
 
                 <div className="form-group">
+
                   <label htmlFor="quantity">
                     Quantity
                   </label>
@@ -412,10 +552,13 @@ function AddProduct() {
                     onChange={handleChange}
                     placeholder="Enter quantity"
                   />
+
                 </div>
+
               </div>
 
               <div className="form-group">
+
                 <label htmlFor="description">
                   Description
                 </label>
@@ -428,66 +571,216 @@ function AddProduct() {
                   onChange={handleChange}
                   placeholder="Describe the dress..."
                 />
+
               </div>
+
             </div>
+
+            {/* PHOTOS */}
 
             <div className="admin-form-section">
-              <h2>Dress Photo</h2>
 
-              <label
-                htmlFor="image"
-                className="image-upload-box"
-              >
-                {previewUrl ? (
-                  <div className="selected-image-preview">
-                    <img
-                      src={previewUrl}
-                      alt="Selected dress"
+              <h2>Dress Photos</h2>
+
+              <p className="photo-section-help">
+                Upload both the front and back side
+                of the dress.
+              </p>
+
+              <div className="dress-photo-upload-grid">
+
+                {/* FRONT */}
+
+                <div className="dress-photo-upload">
+
+                  <label className="photo-side-label">
+                    Front Side
+                  </label>
+
+                  <label
+                    htmlFor="front-image"
+                    className="image-upload-box"
+                  >
+
+                    {frontPreviewUrl ? (
+                      <div className="selected-image-preview">
+
+                        <img
+                          src={frontPreviewUrl}
+                          alt="Front of dress"
+                        />
+
+                        <div className="selected-image-overlay">
+                          <Upload size={20} />
+
+                          <span>
+                            Choose another photo
+                          </span>
+                        </div>
+
+                      </div>
+                    ) : (
+                      <>
+                        <ImageIcon size={40} />
+
+                        <strong>
+                          Upload Front Photo
+                        </strong>
+
+                        <span>
+                          Click to choose an image
+                        </span>
+                      </>
+                    )}
+
+                    <input
+                      id="front-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        handleFileChange(
+                          event,
+                          "front"
+                        )
+                      }
+                      hidden
                     />
 
-                    <div className="selected-image-overlay">
-                      <Upload size={20} />
-                      <span>
-                        Choose another photo
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <ImageIcon size={40} />
+                  </label>
 
-                    <strong>
-                      Upload Dress Photo
-                    </strong>
+                  {frontPreviewUrl &&
+                    !showCropper && (
+                      <div className="photo-actions">
 
-                    <span>
-                      Click to choose an image
-                    </span>
-                  </>
-                )}
+                        <button
+                          type="button"
+                          className="crop-again-button"
+                          onClick={() =>
+                            handleCropAgain(
+                              "front"
+                            )
+                          }
+                        >
+                          <Crop size={17} />
+                          Crop Again
+                        </button>
 
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  hidden
-                />
-              </label>
+                        <button
+                          type="button"
+                          className="remove-photo-button"
+                          onClick={() =>
+                            removeImage("front")
+                          }
+                        >
+                          <X size={16} />
+                          Remove
+                        </button>
 
-              {previewUrl && !showCropper && (
-                <button
-                  type="button"
-                  className="crop-again-button"
-                  onClick={handleCropAgain}
-                >
-                  <Crop size={17} />
-                  Crop Photo Again
-                </button>
-              )}
+                      </div>
+                    )}
+
+                </div>
+
+                {/* BACK */}
+
+                <div className="dress-photo-upload">
+
+                  <label className="photo-side-label">
+                    Back Side
+                  </label>
+
+                  <label
+                    htmlFor="back-image"
+                    className="image-upload-box"
+                  >
+
+                    {backPreviewUrl ? (
+                      <div className="selected-image-preview">
+
+                        <img
+                          src={backPreviewUrl}
+                          alt="Back of dress"
+                        />
+
+                        <div className="selected-image-overlay">
+                          <Upload size={20} />
+
+                          <span>
+                            Choose another photo
+                          </span>
+                        </div>
+
+                      </div>
+                    ) : (
+                      <>
+                        <ImageIcon size={40} />
+
+                        <strong>
+                          Upload Back Photo
+                        </strong>
+
+                        <span>
+                          Click to choose an image
+                        </span>
+                      </>
+                    )}
+
+                    <input
+                      id="back-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        handleFileChange(
+                          event,
+                          "back"
+                        )
+                      }
+                      hidden
+                    />
+
+                  </label>
+
+                  {backPreviewUrl &&
+                    !showCropper && (
+                      <div className="photo-actions">
+
+                        <button
+                          type="button"
+                          className="crop-again-button"
+                          onClick={() =>
+                            handleCropAgain(
+                              "back"
+                            )
+                          }
+                        >
+                          <Crop size={17} />
+                          Crop Again
+                        </button>
+
+                        <button
+                          type="button"
+                          className="remove-photo-button"
+                          onClick={() =>
+                            removeImage("back")
+                          }
+                        >
+                          <X size={16} />
+                          Remove
+                        </button>
+
+                      </div>
+                    )}
+
+                </div>
+
+              </div>
+
             </div>
 
+            {/* ACTIONS */}
+
             <div className="admin-form-actions">
+
               <Link
                 to="/admin/dashboard"
                 className="secondary-button"
@@ -498,18 +791,28 @@ function AddProduct() {
               <button
                 type="submit"
                 className="primary-button"
-                disabled={uploading || showCropper}
+                disabled={
+                  uploading ||
+                  showCropper
+                }
               >
+
                 <Save size={18} />
 
                 {uploading
                   ? "Saving..."
                   : "Save Dress"}
+
               </button>
+
             </div>
+
           </form>
 
+          {/* PREVIEW */}
+
           <aside className="admin-preview-card">
+
             <p className="section-label">
               PREVIEW
             </p>
@@ -517,21 +820,26 @@ function AddProduct() {
             <h2>Dress Preview</h2>
 
             <div className="admin-product-preview">
-              {previewUrl ? (
+
+              {frontPreviewUrl ? (
                 <img
-                  src={previewUrl}
+                  src={frontPreviewUrl}
                   alt="Dress preview"
                 />
               ) : (
                 <div className="admin-preview-placeholder">
+
                   <ImageIcon size={35} />
+
                   <span>
-                    Photo preview
+                    Front photo preview
                   </span>
+
                 </div>
               )}
 
               <div className="admin-preview-info">
+
                 <p>
                   {formData.category}
                 </p>
@@ -555,83 +863,132 @@ function AddProduct() {
                     ? "Quantity not set"
                     : `${formData.quantity} available`}
                 </span>
+
+                {backPreviewUrl && (
+                  <span className="back-photo-ready">
+                    ✓ Back photo added
+                  </span>
+                )}
+
               </div>
+
             </div>
+
           </aside>
+
         </div>
       </main>
 
-      {showCropper && originalImageUrl && (
-        <div className="cropper-modal">
-          <div className="cropper-container">
-            <div className="cropper-header">
-              <p className="section-label">
-                EDIT PHOTO
-              </p>
+      {/* CROPPER MODAL */}
 
-              <h2>
-                Crop Your Dress Photo
-              </h2>
+      {showCropper &&
+        (cropSide === "front"
+          ? frontOriginalUrl
+          : backOriginalUrl) && (
 
-              <p>
-                Drag and resize the box to keep
-                only the part of the photo you want.
-              </p>
-            </div>
+          <div className="cropper-modal">
 
-            <div className="free-crop-area">
-              <ReactCrop
-                crop={crop}
-                onChange={(pixelCrop, percentCrop) =>
-                  setCrop(percentCrop)
-                }
-                onComplete={(pixelCrop) =>
-                  setCompletedCrop(pixelCrop)
-                }
-                keepSelection
-                minWidth={80}
-                minHeight={80}
-              >
-                <img
-                  src={originalImageUrl}
-                  alt="Crop preview"
-                  onLoad={handleImageLoad}
-                />
-              </ReactCrop>
-            </div>
+            <div className="cropper-container">
 
-            <div className="cropper-help">
-              <Crop size={17} />
+              <div className="cropper-header">
 
-              <span>
-                Drag the box to move it.
-                Drag its corners or edges to resize it.
-              </span>
-            </div>
+                <p className="section-label">
+                  EDIT PHOTO
+                </p>
 
-            <div className="cropper-actions">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={handleCropCancel}
-              >
-                <X size={17} />
-                Cancel
-              </button>
+                <h2>
+                  Crop{" "}
+                  {cropSide === "front"
+                    ? "Front"
+                    : "Back"}{" "}
+                  Photo
+                </h2>
 
-              <button
-                type="button"
-                className="primary-button"
-                onClick={handleCropConfirm}
-              >
+                <p>
+                  Drag and resize the box to keep
+                  only the part of the photo you want.
+                </p>
+
+              </div>
+
+              <div className="free-crop-area">
+
+                <ReactCrop
+                  crop={crop}
+                  onChange={(
+                    pixelCrop,
+                    percentCrop
+                  ) =>
+                    setCrop(percentCrop)
+                  }
+                  onComplete={(pixelCrop) =>
+                    setCompletedCrop(
+                      pixelCrop
+                    )
+                  }
+                  keepSelection
+                  minWidth={80}
+                  minHeight={80}
+                >
+
+                  <img
+                    src={
+                      cropSide === "front"
+                        ? frontOriginalUrl
+                        : backOriginalUrl
+                    }
+                    alt={
+                      cropSide === "front"
+                        ? "Front crop preview"
+                        : "Back crop preview"
+                    }
+                    onLoad={handleImageLoad}
+                  />
+
+                </ReactCrop>
+
+              </div>
+
+              <div className="cropper-help">
+
                 <Crop size={17} />
-                Crop Photo
-              </button>
+
+                <span>
+                  Drag the box to move it.
+                  Drag its corners or edges to resize it.
+                </span>
+
+              </div>
+
+              <div className="cropper-actions">
+
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={handleCropCancel}
+                >
+                  <X size={17} />
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={handleCropConfirm}
+                >
+                  <Crop size={17} />
+                  Crop Photo
+                </button>
+
+              </div>
+
             </div>
+
           </div>
-        </div>
-      )}
+        )}
+
     </>
   );
 }
+
 export default AddProduct;
