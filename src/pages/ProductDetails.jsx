@@ -133,13 +133,14 @@ function ProductDetails() {
     }, 2000);
   };
 
-  const handleWhatsAppOrder = () => {
+  const handleWhatsAppOrder = async () => {
   if (isSoldOut) {
     alert("Sorry, this dress is sold out.");
     return;
   }
 
-  const dressImage = currentImage || product.imageUrl;
+  const frontPhoto = product.imageUrl || "";
+  const backPhoto = product.backImageUrl || "";
 
   const message =
     "Hello Thrift by Njeri! 👋\n\n" +
@@ -152,16 +153,71 @@ function ProductDetails() {
     "Total: KSh " +
     orderTotal.toLocaleString() +
     "\n\n" +
-    "Dress photo:\n" +
-    dressImage +
-    "\n\n" +
     "Please confirm availability. ❤️";
 
+  /*
+    Try sharing the actual dress image first.
+    This works on supported mobile browsers.
+  */
+  if (navigator.share && navigator.canShare) {
+    try {
+      const imageUrl =
+        selectedImage === "back" && backPhoto
+          ? backPhoto
+          : frontPhoto;
+
+      const response = await fetch(imageUrl);
+
+      if (!response.ok) {
+        throw new Error("Could not load dress image.");
+      }
+
+      const blob = await response.blob();
+
+      const imageFile = new File(
+        [blob],
+        `${product.name.replace(/[^a-z0-9]/gi, "-")}.jpg`,
+        {
+          type: blob.type || "image/jpeg",
+        }
+      );
+
+      const shareData = {
+        title: product.name,
+        text: message,
+        files: [imageFile],
+      };
+
+      if (navigator.canShare({ files: [imageFile] })) {
+        await navigator.share(shareData);
+        return;
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        return;
+      }
+
+      console.log(
+        "Image sharing unavailable. Using WhatsApp link instead.",
+        error
+      );
+    }
+  }
+
+  /*
+    Fallback for browsers that cannot share images.
+  */
   const whatsappLink =
     "https://wa.me/" +
     WHATSAPP_NUMBER +
     "?text=" +
-    encodeURIComponent(message);
+    encodeURIComponent(
+      message +
+        "\n\nDress photo:\n" +
+        (selectedImage === "back" && backPhoto
+          ? backPhoto
+          : frontPhoto)
+    );
 
   window.location.href = whatsappLink;
 };
