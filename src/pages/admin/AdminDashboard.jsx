@@ -118,6 +118,58 @@ try {
 }
 
 };
+const handleDeleteAll = async () => {
+  if (products.length === 0) {
+    alert("There are no dresses to delete.");
+    return;
+  }
+
+  const firstConfirmation = window.confirm(
+    "⚠️ WARNING!\n\nThis will permanently delete ALL dresses from your inventory.\n\nThis action cannot be undone.\n\nDo you want to continue?"
+  );
+
+  if (!firstConfirmation) return;
+
+  const secondConfirmation = window.prompt(
+    'To permanently delete all dresses, type "DELETE" below:'
+  );
+
+  if (secondConfirmation !== "DELETE") {
+    alert("Delete cancelled. Your dresses are safe.");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const snapshot = await getDocs(
+      collection(db, "products")
+    );
+
+    const deletePromises = snapshot.docs.map(
+      (productDoc) =>
+        deleteDoc(
+          doc(db, "products", productDoc.id)
+        )
+    );
+
+    await Promise.all(deletePromises);
+
+    setProducts([]);
+
+    alert("All dresses have been deleted successfully.");
+  } catch (error) {
+    console.error("Error deleting all products:", error);
+
+    alert(
+      "Could not delete all dresses. Please try again."
+    );
+
+    loadProducts();
+  } finally {
+    setLoading(false);
+  }
+};
 
 const handleMarkSold = async (product) => {
 if (Number(product.quantity) === 0) {
@@ -231,6 +283,14 @@ return (
             <LogOut size={17} />
             Logout
           </button>
+          <button
+  type="button"
+  className="admin-delete-all-button"
+  onClick={handleDeleteAll}
+>
+  <Trash2 size={17} />
+  Delete All
+</button>
         </div>
       </section>
 

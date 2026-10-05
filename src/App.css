@@ -356,3 +356,39 @@
 
   letter-spacing: 0.2px;
 }
+/* =========================================
+   ADMIN DELETE ALL BUTTON
+========================================= */
+
+.admin-delete-all-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  border: 1px solid #e3a7a7;
+  border-radius: 8px;
+
+  background: #fff5f5;
+  color: #b42323;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.admin-delete-all-button:hover {
+  background: #b42323;
+  color: #ffffff;
+  border-color: #b42323;
+}
+
+.admin-delete-all-button:active {
+  transform: scale(0.98);
+}
