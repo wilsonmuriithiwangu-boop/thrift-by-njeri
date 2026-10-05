@@ -134,32 +134,37 @@ function ProductDetails() {
   };
 
   const handleWhatsAppOrder = () => {
-    if (isSoldOut) {
-      alert("Sorry, this dress is sold out.");
-      return;
-    }
+  if (isSoldOut) {
+    alert("Sorry, this dress is sold out.");
+    return;
+  }
 
-    const message =
-      "Hello Thrift by Njeri! 👋\n\n" +
-      "I'd like to order:\n" +
-      product.name +
-      "\n" +
-      "Quantity: " +
-      orderQuantity +
-      "\n" +
-      "Total: KSh " +
-      orderTotal.toLocaleString() +
-      "\n\n" +
-      "Please confirm availability. ❤️";
+  const dressImage = currentImage || product.imageUrl;
 
-    const whatsappLink =
-      "https://wa.me/" +
-      WHATSAPP_NUMBER +
-      "?text=" +
-      encodeURIComponent(message);
+  const message =
+    "Hello Thrift by Njeri! 👋\n\n" +
+    "I'd like to order:\n" +
+    product.name +
+    "\n" +
+    "Quantity: " +
+    orderQuantity +
+    "\n" +
+    "Total: KSh " +
+    orderTotal.toLocaleString() +
+    "\n\n" +
+    "Dress photo:\n" +
+    dressImage +
+    "\n\n" +
+    "Please confirm availability. ❤️";
 
-    window.location.href = whatsappLink;
-  };
+  const whatsappLink =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    encodeURIComponent(message);
+
+  window.location.href = whatsappLink;
+};
 
   return (
     <>
