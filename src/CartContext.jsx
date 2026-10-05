@@ -1,9 +1,37 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
+const CART_STORAGE_KEY = "thrift_by_njeri_cart";
+
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+
+      if (!savedCart) {
+        return [];
+      }
+
+      const parsedCart = JSON.parse(savedCart);
+
+      return Array.isArray(parsedCart) ? parsedCart : [];
+    } catch (error) {
+      console.error("Error loading saved cart:", error);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify(cartItems)
+      );
+    } catch (error) {
+      console.error("Error saving cart:", error);
+    }
+  }, [cartItems]);
 
   const addToCart = (product) => {
     setCartItems((currentItems) => {
